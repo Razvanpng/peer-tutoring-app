@@ -7,7 +7,7 @@ import RegisterPage from '../pages/auth/RegisterPage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import MenteeDashboard from '../pages/mentee/MenteeDashboard';
 import MentorDashboard from '../pages/mentor/MentorDashboard';
-import SessionView from '../pages/SessionView'; 
+import SessionView from '../pages/session/SessionView'; 
 
 const RootRedirect = () => {
   const { user, profile, isLoading } = useAuth();
