@@ -44,5 +44,37 @@ export const sessionsApi = {
 
     if (error) throw new Error(error.message);
     return data;
+  },
+
+  // Ia o singura sesiune dupa ID
+  getSession: async (id) => {
+    const { data, error } = await supabase
+      .from('sessions')
+      .select('*, mentee:profiles!mentee_id(id, role), mentor:profiles!mentor_id(id, role)')
+      .eq('id', id)
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  // Mesaje Chat
+  getMessages: async (sessionId) => {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('session_id', sessionId)
+      .order('created_at', { ascending: true });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  sendMessage: async (sessionId, senderId, content) => {
+    const { data, error } = await supabase
+      .from('messages')
+      .insert([{ session_id: sessionId, sender_id: senderId, content }])
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
   }
 };
