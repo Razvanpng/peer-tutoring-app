@@ -46,7 +46,6 @@ export const sessionsApi = {
     return data;
   },
 
-  // Ia o singura sesiune dupa ID
   getSession: async (id) => {
     const { data, error } = await supabase
       .from('sessions')
@@ -57,7 +56,6 @@ export const sessionsApi = {
     return data;
   },
 
-  // Mesaje Chat
   getMessages: async (sessionId) => {
     const { data, error } = await supabase
       .from('messages')
