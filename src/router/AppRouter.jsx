@@ -5,6 +5,8 @@ import RoleRoute from './RoleRoute';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import MenteeDashboard from '../pages/mentee/MenteeDashboard';
+import MentorDashboard from '../pages/mentor/MentorDashboard';
 
 const StubPage = ({ label }) => (
   <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -30,16 +32,16 @@ export default function AppRouter() {
 
         <Route element={<ProtectedRoute />}>
           <Route element={<RoleRoute role="mentee" />}>
-            <Route path="/mentee/dashboard" element={<StubPage label="Mentee Dashboard" />} />
+            <Route path="/mentee/dashboard" element={<MenteeDashboard />} />
           </Route>
 
           <Route element={<RoleRoute role="mentor" />}>
-            <Route path="/mentor/dashboard" element={<StubPage label="Mentor Dashboard" />} />
+            <Route path="/mentor/dashboard" element={<MentorDashboard />} />
           </Route>
 
+          {/* Placeholder routes for future features */}
           <Route path="/session/:id" element={<StubPage label="Session View" />} />
           
-          {/* Ruta principală rezolvată */}
           <Route path="/" element={<RootRedirect />} />
         </Route>
 
