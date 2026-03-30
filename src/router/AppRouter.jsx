@@ -7,12 +7,7 @@ import RegisterPage from '../pages/auth/RegisterPage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import MenteeDashboard from '../pages/mentee/MenteeDashboard';
 import MentorDashboard from '../pages/mentor/MentorDashboard';
-
-const StubPage = ({ label }) => (
-  <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-    <div className="px-4 py-2 border border-slate-200 rounded text-slate-500">{label}</div>
-  </div>
-);
+import SessionView from '../pages/SessionView'; 
 
 const RootRedirect = () => {
   const { user, profile, isLoading } = useAuth();
@@ -39,13 +34,17 @@ export default function AppRouter() {
             <Route path="/mentor/dashboard" element={<MentorDashboard />} />
           </Route>
 
-          {/* Placeholder routes for future features */}
-          <Route path="/session/:id" element={<StubPage label="Session View" />} />
+          {/* route for session view */}
+          <Route path="/session/:id" element={<SessionView />} />
           
           <Route path="/" element={<RootRedirect />} />
         </Route>
 
-        <Route path="*" element={<StubPage label="404 Not Found" />} />
+        <Route path="*" element={
+          <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+            <div className="px-4 py-2 border border-slate-200 rounded text-slate-500">404 Not Found</div>
+          </div>
+        } />
       </Routes>
     </BrowserRouter>
   );
