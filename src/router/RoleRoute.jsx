@@ -8,14 +8,14 @@ const ROLE_HOME = {
 };
 
 export default function RoleRoute({ role }) {
-  const { profile, isLoading } = useAuth();
+  const { user, profile, isLoading } = useAuth();
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading || (user && !profile)) return <LoadingSpinner />;
 
-  if (!profile) return <Navigate to="/" replace />;
+  if (!profile) return <Navigate to="/login" replace />;
 
   if (profile.role !== role) {
-    return <Navigate to={ROLE_HOME[profile.role] || '/'} replace />;
+    return <Navigate to={ROLE_HOME[profile.role] || '/login'} replace />;
   }
 
   return <Outlet />;
