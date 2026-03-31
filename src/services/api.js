@@ -23,6 +23,17 @@ export const sessionsApi = {
     return data;
   },
 
+  getMentorSessions: async (mentorId) => {
+    const { data, error } = await supabase
+      .from('sessions')
+      .select('*, mentee:profiles!mentee_id(role)')
+      .eq('mentor_id', mentorId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
   createSession: async (sessionData) => {
     const { data, error } = await supabase
       .from('sessions')
