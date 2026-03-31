@@ -2,36 +2,47 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
-import LoginPage from '../pages/auth/LoginPage';
-import RegisterPage from '../pages/auth/RegisterPage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import MainLayout from '../components/layout/MainLayout';
-import MenteeDashboard from '../pages/mentee/MenteeDashboard';
-import MentorDirectory from '../pages/mentee/MentorDirectory';
-import MentorDashboard from '../pages/mentor/MentorDashboard';
-import ProfileSettings from '../pages/profile/ProfileSettings';
-import SessionView from '../pages/session/SessionView';
 
-const RootRedirect = () => {
+import LandingPage from '../pages/public/LandingPage';
+import LoginPage from '../pages/auth/LoginPage';
+import RegisterPage from '../pages/auth/RegisterPage';
+import MenteeDashboard from '../pages/mentee/MenteeDashboard';
+import MentorDashboard from '../pages/mentor/MentorDashboard';
+import MentorDirectory from '../pages/mentee/MentorDirectory';
+import SessionView from '../pages/session/SessionView';
+import ProfileSettings from '../pages/profile/ProfileSettings';
+import NotFoundPage from '../pages/NotFoundPage';
+
+function RootRedirect() {
   const { user, profile, isLoading } = useAuth();
-  
-  if (isLoading || (user && !profile)) return <LoadingSpinner />;
-  if (!profile) return <Navigate to="/login" replace />;
-  
-  return <Navigate to={profile.role === 'mentor' ? '/mentor/dashboard' : '/mentee/dashboard'} replace />;
-};
+
+  if (isLoading) return <LoadingSpinner />;
+  if (!user) return <LandingPage />;
+  if (user && !profile) return <LoadingSpinner />;
+
+  return (
+    <Navigate
+      to={profile.role === 'mentor' ? '/mentor/dashboard' : '/mentee/dashboard'}
+      replace
+    />
+  );
+}
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+
+        <Route path="/" element={<RootRedirect />} />
+
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
         <Route element={<ProtectedRoute />}>
-          
           <Route element={<MainLayout />}>
-            
+
             <Route element={<RoleRoute role="mentee" />}>
               <Route path="/mentee/dashboard" element={<MenteeDashboard />} />
               <Route path="/mentee/directory" element={<MentorDirectory />} />
@@ -42,18 +53,13 @@ export default function AppRouter() {
             </Route>
 
             <Route path="/profile" element={<ProfileSettings />} />
-          </Route>
+            <Route path="/session/:id" element={<SessionView />} />
 
-          <Route path="/session/:id" element={<SessionView />} />
-          
-          <Route path="/" element={<RootRedirect />} />
+          </Route>
         </Route>
 
-        <Route path="*" element={
-          <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-            <div className="px-4 py-2 border border-slate-200 rounded text-slate-500">404 Not Found</div>
-          </div>
-        } />
+        <Route path="*" element={<NotFoundPage />} />
+
       </Routes>
     </BrowserRouter>
   );
