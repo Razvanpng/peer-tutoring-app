@@ -8,10 +8,11 @@ const STATUS_STYLES = {
   pending:  'bg-amber-50 text-amber-700 border-amber-200',
   accepted: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   completed: 'bg-slate-100 text-slate-500 border-slate-200',
+  closed:   'bg-slate-100 text-slate-500 border-slate-200',
 };
 
 function StatusBadge({ status }) {
-  const style = STATUS_STYLES[status] ?? STATUS_STYLES.completed;
+  const style = STATUS_STYLES[status] ?? STATUS_STYLES.closed;
   return (
     <span className={`inline-block text-xs font-medium border rounded-full px-2.5 py-0.5 capitalize ${style}`}>
       {status}
@@ -51,6 +52,46 @@ function SessionCard({ session }) {
   );
 }
 
+function PastSessionCard({ session }) {
+  const ratedStars = session.rating ?? 0;
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-800 truncate">{session.topic}</p>
+          <p className="mt-0.5 text-xs text-slate-400">
+            {new Date(session.created_at).toLocaleDateString('en-US', {
+              month: 'short', day: 'numeric', year: 'numeric',
+            })}
+          </p>
+        </div>
+        <span className="shrink-0 text-xs font-medium border rounded-full px-2.5 py-0.5 bg-slate-100 text-slate-500 border-slate-200">
+          Completed
+        </span>
+      </div>
+
+      {session.rating != null ? (
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <svg
+              key={star}
+              xmlns="http://www.w3.org/2000/svg"
+              className={`w-3.5 h-3.5 ${star <= ratedStars ? 'text-amber-400' : 'text-slate-200'}`}
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+          ))}
+          <span className="ml-1 text-xs text-slate-500">Your rating: {session.rating} / 5</span>
+        </div>
+      ) : (
+        <p className="text-xs text-slate-400 italic">You did not leave a rating.</p>
+      )}
+    </div>
+  );
+}
+
 export default function MenteeDashboard() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -63,6 +104,11 @@ export default function MenteeDashboard() {
     queryKey: ['mentee-sessions', user.id],
     queryFn: () => sessionsApi.getMenteeSessions(user.id),
   });
+
+  const activeRequests = sessions.filter(
+    (s) => s.status === 'pending' || s.status === 'accepted'
+  );
+  const pastSessions = sessions.filter((s) => s.status === 'completed');
 
   const createMutation = useMutation({
     mutationFn: ({ topic, description }) =>
@@ -85,7 +131,8 @@ export default function MenteeDashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
+
       <section className="space-y-4">
         <div>
           <h2 className="text-base font-semibold text-slate-800">Request a session</h2>
@@ -143,8 +190,13 @@ export default function MenteeDashboard() {
         </form>
       </section>
 
+      <div className="border-t border-slate-200" />
+
       <section className="space-y-4">
-        <h2 className="text-base font-semibold text-slate-800">Your requests</h2>
+        <div>
+          <h2 className="text-base font-semibold text-slate-800">Active Requests</h2>
+          <p className="text-sm text-slate-500 mt-0.5">Sessions that are pending or currently in progress.</p>
+        </div>
 
         {sessionsLoading ? (
           <div className="space-y-3">
@@ -152,18 +204,46 @@ export default function MenteeDashboard() {
               <div key={i} className="h-24 rounded-xl bg-slate-100 animate-pulse" />
             ))}
           </div>
-        ) : sessions.length === 0 ? (
+        ) : activeRequests.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
-            <p className="text-sm text-slate-400">No requests yet. Submit one above.</p>
+            <p className="text-sm text-slate-400">No active requests.</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {sessions.map((session) => (
+            {activeRequests.map((session) => (
               <SessionCard key={session.id} session={session} />
             ))}
           </div>
         )}
       </section>
+
+      <div className="border-t border-slate-200" />
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-base font-semibold text-slate-800">Session History</h2>
+          <p className="text-sm text-slate-500 mt-0.5">Sessions you have completed with a mentor.</p>
+        </div>
+
+        {sessionsLoading ? (
+          <div className="space-y-3">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="h-24 rounded-xl bg-slate-100 animate-pulse" />
+            ))}
+          </div>
+        ) : pastSessions.length === 0 ? (
+          <div className="bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
+            <p className="text-sm text-slate-400">No completed sessions yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {pastSessions.map((session) => (
+              <PastSessionCard key={session.id} session={session} />
+            ))}
+          </div>
+        )}
+      </section>
+
     </div>
   );
 }
