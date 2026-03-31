@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { sessionsApi } from '../../services/api';
@@ -19,11 +20,12 @@ function StatusBadge({ status }) {
 }
 
 function SessionCard({ session }) {
+  const navigate = useNavigate();
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-slate-800">{session.topic}</p>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-800 truncate">{session.topic}</p>
           {session.description && (
             <p className="mt-1 text-xs text-slate-500 leading-relaxed line-clamp-2">
               {session.description}
@@ -32,11 +34,19 @@ function SessionCard({ session }) {
         </div>
         <StatusBadge status={session.status} />
       </div>
-      <p className="text-xs text-slate-400">
-        {new Date(session.created_at).toLocaleDateString('en-US', {
-          month: 'short', day: 'numeric', year: 'numeric',
-        })}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-slate-400">
+          {new Date(session.created_at).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric',
+          })}
+        </p>
+        <button
+          onClick={() => navigate(`/session/${session.id}`)}
+          className="text-xs font-medium text-slate-600 border border-slate-200 rounded-lg px-3 py-1.5 hover:bg-slate-50 hover:border-slate-300 transition"
+        >
+          Open Session
+        </button>
+      </div>
     </div>
   );
 }
@@ -76,8 +86,6 @@ export default function MenteeDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-
-      {/* Header */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
           <span className="text-sm font-semibold text-slate-800">Mentee Dashboard</span>
@@ -91,8 +99,6 @@ export default function MenteeDashboard() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-
-        {/* Request form */}
         <section className="space-y-4">
           <div>
             <h2 className="text-base font-semibold text-slate-800">Request a session</h2>
@@ -150,7 +156,6 @@ export default function MenteeDashboard() {
           </form>
         </section>
 
-        {/* Sessions list */}
         <section className="space-y-4">
           <h2 className="text-base font-semibold text-slate-800">Your requests</h2>
 
@@ -172,7 +177,6 @@ export default function MenteeDashboard() {
             </div>
           )}
         </section>
-
       </main>
     </div>
   );
