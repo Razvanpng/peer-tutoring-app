@@ -93,3 +93,35 @@ export const sessionsApi = {
     return data;
   }
 };
+
+export const profilesApi = {
+  getProfile: async (id) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+  
+  updateProfile: async (id, updates) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  getAllMentors: async () => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('role', 'mentor');
+    if (error) throw new Error(error.message);
+    return data;
+  }
+};
