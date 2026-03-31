@@ -1,5 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
+import { profilesApi } from '../../services/api';
 
 const MENTEE_LINKS = [
   { label: 'Dashboard', to: '/mentee/dashboard' },
@@ -27,11 +29,37 @@ function NavLink({ to, label, active }) {
   );
 }
 
+function UserAvatar({ profile }) {
+  const initial = (profile?.full_name?.[0] || profile?.email?.[0] || '?').toUpperCase();
+
+  return (
+    <div className="w-8 h-8 rounded-full border border-slate-200 bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
+      {profile?.avatar_url ? (
+        <img
+          src={profile.avatar_url}
+          alt={profile.full_name || 'Avatar'}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span className="text-xs font-semibold text-slate-500 select-none">
+          {initial}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function MainLayout() {
-  const { profile, signOut } = useAuth();
+  const { profile: authProfile, user, signOut } = useAuth();
   const location = useLocation();
 
-  const links = profile?.role === 'mentor' ? MENTOR_LINKS : MENTEE_LINKS;
+  const { data: fullProfile } = useQuery({
+    queryKey: ['profile', authProfile?.id],
+    queryFn: () => profilesApi.getProfile(authProfile.id),
+    enabled: !!authProfile?.id,
+  });
+
+  const links = authProfile?.role === 'mentor' ? MENTOR_LINKS : MENTEE_LINKS;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -53,12 +81,15 @@ export default function MainLayout() {
             </nav>
           </div>
 
-          <button
-            onClick={signOut}
-            className="text-xs text-slate-500 hover:text-slate-800 transition underline underline-offset-2 shrink-0"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-3 shrink-0">
+            <UserAvatar profile={fullProfile ?? { email: user?.email, ...authProfile }} />
+            <button
+              onClick={signOut}
+              className="text-xs text-slate-500 hover:text-slate-800 transition underline underline-offset-2"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 

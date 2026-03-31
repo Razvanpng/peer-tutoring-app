@@ -82,6 +82,9 @@ function MentorCard({ mentor }) {
   const [showForm, setShowForm] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const displayName = mentor.full_name?.trim() || 'Anonymous Mentor';
+  const initials = displayName[0].toUpperCase();
+
   function handleSuccess() {
     setSent(true);
     setShowForm(false);
@@ -90,12 +93,20 @@ function MentorCard({ mentor }) {
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 flex flex-col">
       <div className="space-y-1">
-        <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
-          <span className="text-sm font-semibold text-slate-500 uppercase">
-            {mentor.email?.[0] ?? 'M'}
-          </span>
+        <div className="w-9 h-9 rounded-full border border-slate-200 bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
+          {mentor.avatar_url ? (
+            <img
+              src={mentor.avatar_url}
+              alt={displayName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-sm font-semibold text-slate-500 uppercase select-none">
+              {initials}
+            </span>
+          )}
         </div>
-        <p className="text-sm font-semibold text-slate-800 mt-2 truncate">{mentor.email}</p>
+        <p className="text-sm font-semibold text-slate-800 mt-2 truncate">{displayName}</p>
         {mentor.bio ? (
           <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">{mentor.bio}</p>
         ) : (
@@ -183,6 +194,7 @@ export default function MentorDirectory() {
     const query = searchQuery.trim().toLowerCase();
     const matchesSearch =
       !query ||
+      mentor.full_name?.toLowerCase().includes(query) ||
       mentor.email?.toLowerCase().includes(query) ||
       mentor.bio?.toLowerCase().includes(query);
     const matchesSubject =
