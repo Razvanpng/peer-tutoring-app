@@ -51,9 +51,7 @@ function RequestForm({ mentorId, onSuccess }) {
         />
       </div>
       <div className="space-y-1.5">
-        <label className="block text-xs font-medium text-slate-700">
-          Description
-        </label>
+        <label className="block text-xs font-medium text-slate-700">Description</label>
         <textarea
           rows={2}
           value={description}
@@ -62,14 +60,12 @@ function RequestForm({ mentorId, onSuccess }) {
           className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none"
         />
       </div>
-
       {formError && (
         <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
           {formError}
         </p>
       )}
-
-      <div className="flex items-center gap-2 justify-end">
+      <div className="flex justify-end">
         <button
           type="submit"
           disabled={requestMutation.isPending || !topic.trim()}
@@ -99,13 +95,9 @@ function MentorCard({ mentor }) {
             {mentor.email?.[0] ?? 'M'}
           </span>
         </div>
-        <p className="text-sm font-semibold text-slate-800 mt-2 truncate">
-          {mentor.email}
-        </p>
+        <p className="text-sm font-semibold text-slate-800 mt-2 truncate">{mentor.email}</p>
         {mentor.bio ? (
-          <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
-            {mentor.bio}
-          </p>
+          <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">{mentor.bio}</p>
         ) : (
           <p className="text-xs text-slate-400 italic">No bio provided.</p>
         )}
@@ -173,10 +165,33 @@ function SkeletonCard() {
 }
 
 export default function MentorDirectory() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('All');
+
   const { data: mentors = [], isLoading, isError } = useQuery({
     queryKey: ['mentors'],
     queryFn: () => profilesApi.getAllMentors(),
   });
+
+  const uniqueSubjects = [
+    ...new Set(
+      mentors.flatMap((m) => (Array.isArray(m.subjects) ? m.subjects : []))
+    ),
+  ].sort();
+
+  const filteredMentors = mentors.filter((mentor) => {
+    const query = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !query ||
+      mentor.email?.toLowerCase().includes(query) ||
+      mentor.bio?.toLowerCase().includes(query);
+    const matchesSubject =
+      selectedSubject === 'All' ||
+      (Array.isArray(mentor.subjects) && mentor.subjects.includes(selectedSubject));
+    return matchesSearch && matchesSubject;
+  });
+
+  const hasActiveFilters = searchQuery.trim() !== '' || selectedSubject !== 'All';
 
   return (
     <div className="space-y-6">
@@ -185,6 +200,52 @@ export default function MentorDirectory() {
         <p className="text-sm text-slate-500 mt-0.5">
           Browse available mentors and send a session request directly.
         </p>
+      </div>
+
+      <div className="space-y-3">
+        <div className="relative">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name or bio…"
+            className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100 shadow-sm"
+          />
+        </div>
+
+        {!isLoading && uniqueSubjects.length > 0 && (
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {['All', ...uniqueSubjects].map((subject) => {
+              const active = selectedSubject === subject;
+              return (
+                <button
+                  key={subject}
+                  onClick={() => setSelectedSubject(subject)}
+                  className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 ${
+                    active
+                      ? 'bg-slate-800 border-slate-800 text-white'
+                      : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  {subject}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {isError && (
@@ -204,9 +265,24 @@ export default function MentorDirectory() {
           <p className="text-sm text-slate-400">No mentors have joined yet.</p>
           <p className="text-xs text-slate-400 mt-1">Check back soon.</p>
         </div>
+      ) : filteredMentors.length === 0 ? (
+        <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-sm space-y-2">
+          <p className="text-sm text-slate-500 font-medium">No mentors found</p>
+          <p className="text-xs text-slate-400">
+            No mentors match your search criteria. Try adjusting your search or filter.
+          </p>
+          {hasActiveFilters && (
+            <button
+              onClick={() => { setSearchQuery(''); setSelectedSubject('All'); }}
+              className="mt-2 text-xs text-slate-500 underline underline-offset-2 hover:text-slate-800 transition"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mentors.map((mentor) => (
+          {filteredMentors.map((mentor) => (
             <MentorCard key={mentor.id} mentor={mentor} />
           ))}
         </div>
