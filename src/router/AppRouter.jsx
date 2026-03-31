@@ -5,9 +5,12 @@ import RoleRoute from './RoleRoute';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import MainLayout from '../components/layout/MainLayout';
 import MenteeDashboard from '../pages/mentee/MenteeDashboard';
+import MentorDirectory from '../pages/mentee/MentorDirectory';
 import MentorDashboard from '../pages/mentor/MentorDashboard';
-import SessionView from '../pages/session/SessionView'; 
+import ProfileSettings from '../pages/profile/ProfileSettings';
+import SessionView from '../pages/session/SessionView';
 
 const RootRedirect = () => {
   const { user, profile, isLoading } = useAuth();
@@ -25,16 +28,27 @@ export default function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
+        {/* Toate rutele de aici în jos necesită autentificare */}
         <Route element={<ProtectedRoute />}>
-          <Route element={<RoleRoute role="mentee" />}>
-            <Route path="/mentee/dashboard" element={<MenteeDashboard />} />
+          
+          {/* MainLayout "învelește" rutele care au nevoie de bara de navigare de sus */}
+          <Route element={<MainLayout />}>
+            
+            {/* Rute specifice Mentee */}
+            <Route element={<RoleRoute role="mentee" />}>
+              <Route path="/mentee/dashboard" element={<MenteeDashboard />} />
+              <Route path="/mentee/directory" element={<MentorDirectory />} />
+            </Route>
+
+            {/* Rute specifice Mentor */}
+            <Route element={<RoleRoute role="mentor" />}>
+              <Route path="/mentor/dashboard" element={<MentorDashboard />} />
+            </Route>
+
+            {/* Rute comune (ambele roluri au acces) */}
+            <Route path="/profile" element={<ProfileSettings />} />
           </Route>
 
-          <Route element={<RoleRoute role="mentor" />}>
-            <Route path="/mentor/dashboard" element={<MentorDashboard />} />
-          </Route>
-
-          {/* route for session view */}
           <Route path="/session/:id" element={<SessionView />} />
           
           <Route path="/" element={<RootRedirect />} />

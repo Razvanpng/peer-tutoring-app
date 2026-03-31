@@ -94,7 +94,7 @@ function SectionBlock({ title, subtitle, isLoading, isEmpty, emptyText, skeleton
 }
 
 export default function MentorDashboard() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: allMentorSessions = [], isLoading: mentorSessionsLoading } = useQuery({
@@ -118,59 +118,45 @@ export default function MentorDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-          <span className="text-sm font-semibold text-slate-800">Mentor Dashboard</span>
-          <button
-            onClick={signOut}
-            className="text-xs text-slate-500 hover:text-slate-800 transition underline underline-offset-2"
-          >
-            Sign out
-          </button>
-        </div>
-      </header>
+    <div className="space-y-10">
+      <SectionBlock
+        title="Active Sessions"
+        subtitle="Sessions you have accepted and are currently running."
+        isLoading={mentorSessionsLoading}
+        isEmpty={activeSessions.length === 0}
+        emptyText="No active sessions yet."
+        skeletonCount={2}
+      >
+        {activeSessions.map((session) => (
+          <ActiveSessionCard key={session.id} session={session} />
+        ))}
+      </SectionBlock>
 
-      <main className="max-w-2xl mx-auto px-4 py-8 space-y-10">
-        <SectionBlock
-          title="Active Sessions"
-          subtitle="Sessions you have accepted and are currently running."
-          isLoading={mentorSessionsLoading}
-          isEmpty={activeSessions.length === 0}
-          emptyText="No active sessions yet."
-          skeletonCount={2}
-        >
-          {activeSessions.map((session) => (
-            <ActiveSessionCard key={session.id} session={session} />
-          ))}
-        </SectionBlock>
+      <div className="border-t border-slate-200" />
 
-        <div className="border-t border-slate-200" />
+      <SectionBlock
+        title="Pending Requests"
+        subtitle="Open requests from mentees waiting for a mentor."
+        isLoading={pendingLoading}
+        isEmpty={pendingSessions.length === 0}
+        emptyText="No open requests at the moment."
+        skeletonCount={3}
+      >
+        {pendingSessions.map((session) => (
+          <PendingSessionCard
+            key={session.id}
+            session={session}
+            onAccept={(id) => acceptMutation.mutate(id)}
+            isAccepting={acceptMutation.isPending && acceptMutation.variables === session.id}
+          />
+        ))}
+      </SectionBlock>
 
-        <SectionBlock
-          title="Pending Requests"
-          subtitle="Open requests from mentees waiting for a mentor."
-          isLoading={pendingLoading}
-          isEmpty={pendingSessions.length === 0}
-          emptyText="No open requests at the moment."
-          skeletonCount={3}
-        >
-          {pendingSessions.map((session) => (
-            <PendingSessionCard
-              key={session.id}
-              session={session}
-              onAccept={(id) => acceptMutation.mutate(id)}
-              isAccepting={acceptMutation.isPending && acceptMutation.variables === session.id}
-            />
-          ))}
-        </SectionBlock>
-
-        {acceptMutation.isError && (
-          <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-            {acceptMutation.error?.message ?? 'Failed to accept session. Please try again.'}
-          </p>
-        )}
-      </main>
+      {acceptMutation.isError && (
+        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          {acceptMutation.error?.message ?? 'Failed to accept session. Please try again.'}
+        </p>
+      )}
     </div>
   );
 }
