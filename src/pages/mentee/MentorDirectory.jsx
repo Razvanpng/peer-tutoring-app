@@ -1,5 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { profilesApi } from '../../services/api';
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { useAuth } from '../../context/AuthContext';
+import { profilesApi, sessionsApi } from '../../services/api';
 
 function SubjectBadge({ subject }) {
   return (
@@ -9,7 +11,86 @@ function SubjectBadge({ subject }) {
   );
 }
 
+function RequestForm({ mentorId, onSuccess }) {
+  const { user } = useAuth();
+  const [topic, setTopic] = useState('');
+  const [description, setDescription] = useState('');
+  const [formError, setFormError] = useState(null);
+
+  const requestMutation = useMutation({
+    mutationFn: ({ topic, description }) =>
+      sessionsApi.createSession({ mentee_id: user.id, mentor_id: mentorId, topic, description }),
+    onSuccess: () => {
+      setFormError(null);
+      onSuccess();
+    },
+    onError: (err) => {
+      setFormError(err.message ?? 'Failed to send request. Please try again.');
+    },
+  });
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!topic.trim()) return;
+    requestMutation.mutate({ topic: topic.trim(), description: description.trim() });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3 pt-3 border-t border-slate-100">
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-slate-700">
+          Topic <span className="text-red-400">*</span>
+        </label>
+        <input
+          type="text"
+          required
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="e.g. Linear algebra basics"
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-slate-700">
+          Description
+        </label>
+        <textarea
+          rows={2}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Describe what you need help with…"
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none"
+        />
+      </div>
+
+      {formError && (
+        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          {formError}
+        </p>
+      )}
+
+      <div className="flex items-center gap-2 justify-end">
+        <button
+          type="submit"
+          disabled={requestMutation.isPending || !topic.trim()}
+          className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {requestMutation.isPending ? 'Sending…' : 'Send request'}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function MentorCard({ mentor }) {
+  const [showForm, setShowForm] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  function handleSuccess() {
+    setSent(true);
+    setShowForm(false);
+  }
+
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 flex flex-col">
       <div className="space-y-1">
@@ -37,6 +118,39 @@ function MentorCard({ mentor }) {
           ))}
         </div>
       )}
+
+      <div className="pt-1 mt-auto">
+        {sent ? (
+          <div className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            Request sent!
+          </div>
+        ) : (
+          <>
+            {!showForm && (
+              <button
+                onClick={() => setShowForm(true)}
+                className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition"
+              >
+                Request Session
+              </button>
+            )}
+            {showForm && (
+              <>
+                <RequestForm mentorId={mentor.id} onSuccess={handleSuccess} />
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="mt-2 w-full text-xs text-slate-400 hover:text-slate-600 transition"
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -69,7 +183,7 @@ export default function MentorDirectory() {
       <div>
         <h1 className="text-lg font-semibold text-slate-800">Find a Mentor</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Browse available mentors and the subjects they cover.
+          Browse available mentors and send a session request directly.
         </p>
       </div>
 

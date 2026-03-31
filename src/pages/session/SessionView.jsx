@@ -26,6 +26,150 @@ function MessageBubble({ message, isOwn }) {
   );
 }
 
+function StarRating({ value }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          xmlns="http://www.w3.org/2000/svg"
+          className={`w-4 h-4 ${star <= value ? 'text-amber-400' : 'text-slate-200'}`}
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+function ReviewDisplay({ session }) {
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+      <div className="flex items-center gap-2">
+        <StarRating value={session.rating} />
+        <span className="text-xs text-slate-500 font-medium">{session.rating} / 5</span>
+      </div>
+      {session.review && (
+        <p className="text-sm text-slate-700 leading-relaxed">{session.review}</p>
+      )}
+      <p className="text-xs text-slate-400">Review submitted by mentee</p>
+    </div>
+  );
+}
+
+function ReviewForm({ sessionId, onSuccess }) {
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState('');
+  const [hovered, setHovered] = useState(null);
+  const [formError, setFormError] = useState(null);
+
+  const reviewMutation = useMutation({
+    mutationFn: () => sessionsApi.submitReview(sessionId, rating, review),
+    onSuccess: () => {
+      setFormError(null);
+      onSuccess();
+    },
+    onError: (err) => {
+      setFormError(err.message ?? 'Failed to submit review. Please try again.');
+    },
+  });
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    reviewMutation.mutate();
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+      <div>
+        <p className="text-sm font-semibold text-slate-800">Leave a Review</p>
+        <p className="text-xs text-slate-500 mt-0.5">How was your session?</p>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="block text-xs font-medium text-slate-700">Rating</label>
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              onClick={() => setRating(star)}
+              onMouseEnter={() => setHovered(star)}
+              onMouseLeave={() => setHovered(null)}
+              className="focus:outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`w-6 h-6 transition-colors ${
+                  star <= (hovered ?? rating) ? 'text-amber-400' : 'text-slate-200'
+                }`}
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+            </button>
+          ))}
+          <span className="ml-2 text-xs text-slate-500">{hovered ?? rating} / 5</span>
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <label htmlFor="review" className="block text-xs font-medium text-slate-700">
+          Review
+        </label>
+        <textarea
+          id="review"
+          rows={3}
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+          placeholder="Share what you found helpful or what could be improved…"
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none"
+        />
+      </div>
+
+      {formError && (
+        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          {formError}
+        </p>
+      )}
+
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={reviewMutation.isPending}
+          className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {reviewMutation.isPending ? 'Submitting…' : 'Submit review'}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function ReviewSection({ session, userId, onReviewSuccess }) {
+  if (session.status !== 'closed') return null;
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-6 space-y-2">
+      <div className="border-t border-slate-200 pt-5 space-y-3">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Session Review</p>
+        {session.rating != null ? (
+          <ReviewDisplay session={session} />
+        ) : userId === session.mentee_id ? (
+          <ReviewForm sessionId={session.id} onSuccess={onReviewSuccess} />
+        ) : (
+          <div className="bg-white border border-slate-200 rounded-xl p-5 text-center shadow-sm">
+            <p className="text-sm text-slate-400">No review has been submitted yet.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SessionHeader({ session, onBack, onClose, isClosing }) {
   const STATUS_STYLES = {
     pending:  'bg-amber-50 text-amber-700 border-amber-200',
@@ -111,6 +255,10 @@ export default function SessionView() {
       queryClient.invalidateQueries({ queryKey: ['session', id] });
     },
   });
+
+  function handleReviewSuccess() {
+    queryClient.invalidateQueries({ queryKey: ['session', id] });
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -202,10 +350,16 @@ export default function SessionView() {
           )}
           <div ref={bottomRef} />
         </div>
+
+        <ReviewSection
+          session={session}
+          userId={user.id}
+          onReviewSuccess={handleReviewSuccess}
+        />
       </div>
 
       {sendMutation.isError && (
-        <div className="bg-red-50 border-t border-red-100 px-4 py-2">
+        <div className="bg-red-50 border-t border-red-100 px-4 py-2 shrink-0">
           <p className="max-w-2xl mx-auto text-xs text-red-500">
             {sendMutation.error?.message ?? 'Failed to send message. Please try again.'}
           </p>
