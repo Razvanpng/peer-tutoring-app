@@ -91,6 +91,17 @@ export const sessionsApi = {
       .single();
     if (error) throw new Error(error.message);
     return data;
+  },
+
+  submitReview: async (sessionId, rating, review) => {
+    const { data, error } = await supabase
+      .from('sessions')
+      .update({ rating, review })
+      .eq('id', sessionId)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
   }
 };
 
