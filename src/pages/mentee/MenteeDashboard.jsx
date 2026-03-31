@@ -7,11 +7,11 @@ import { sessionsApi } from '../../services/api';
 const STATUS_STYLES = {
   pending:  'bg-amber-50 text-amber-700 border-amber-200',
   accepted: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  closed:   'bg-slate-100 text-slate-500 border-slate-200',
+  completed: 'bg-slate-100 text-slate-500 border-slate-200',
 };
 
 function StatusBadge({ status }) {
-  const style = STATUS_STYLES[status] ?? STATUS_STYLES.closed;
+  const style = STATUS_STYLES[status] ?? STATUS_STYLES.completed;
   return (
     <span className={`inline-block text-xs font-medium border rounded-full px-2.5 py-0.5 capitalize ${style}`}>
       {status}

@@ -150,7 +150,7 @@ function ReviewForm({ sessionId, onSuccess }) {
 }
 
 function ReviewSection({ session, userId, onReviewSuccess }) {
-  if (session.status !== 'closed') return null;
+  if (session.status !== 'completed') return null;
 
   return (
     <div className="max-w-2xl mx-auto px-4 pb-6 space-y-2">
@@ -174,10 +174,10 @@ function SessionHeader({ session, onBack, onClose, isClosing }) {
   const STATUS_STYLES = {
     pending:  'bg-amber-50 text-amber-700 border-amber-200',
     accepted: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    closed:   'bg-slate-100 text-slate-500 border-slate-200',
+    completed: 'bg-slate-100 text-slate-500 border-slate-200',
   };
 
-  const style = STATUS_STYLES[session.status] ?? STATUS_STYLES.closed;
+  const style = STATUS_STYLES[session.status] ?? STATUS_STYLES.completed;
 
   return (
     <header className="bg-white border-b border-slate-200 shrink-0">
@@ -250,7 +250,7 @@ export default function SessionView() {
   });
 
   const closeMutation = useMutation({
-    mutationFn: () => sessionsApi.updateSessionStatus(id, 'closed'),
+    mutationFn: () => sessionsApi.updateSessionStatus(id, 'completed'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['session', id] });
     },
@@ -277,7 +277,7 @@ export default function SessionView() {
     }
   }
 
-  const isClosed = session?.status === 'closed';
+  const isClosed = session?.status === 'completed';
 
   if (sessionLoading) {
     return (
