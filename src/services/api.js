@@ -7,7 +7,6 @@ export const sessionsApi = {
       .select('*, mentee:profiles!mentee_id(role)')
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
-    
     if (error) throw new Error(error.message);
     return data;
   },
@@ -18,7 +17,6 @@ export const sessionsApi = {
       .select('*, mentor:profiles!mentor_id(role)')
       .eq('mentee_id', menteeId)
       .order('created_at', { ascending: false });
-
     if (error) throw new Error(error.message);
     return data;
   },
@@ -29,7 +27,6 @@ export const sessionsApi = {
       .select('*, mentee:profiles!mentee_id(role)')
       .eq('mentor_id', mentorId)
       .order('created_at', { ascending: false });
-
     if (error) throw new Error(error.message);
     return data;
   },
@@ -40,7 +37,6 @@ export const sessionsApi = {
       .insert([sessionData])
       .select()
       .single();
-
     if (error) throw new Error(error.message);
     return data;
   },
@@ -52,7 +48,6 @@ export const sessionsApi = {
       .eq('id', sessionId)
       .select()
       .single();
-
     if (error) throw new Error(error.message);
     return data;
   },
@@ -81,6 +76,17 @@ export const sessionsApi = {
     const { data, error } = await supabase
       .from('messages')
       .insert([{ session_id: sessionId, sender_id: senderId, content }])
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  updateSessionStatus: async (sessionId, newStatus) => {
+    const { data, error } = await supabase
+      .from('sessions')
+      .update({ status: newStatus })
+      .eq('id', sessionId)
       .select()
       .single();
     if (error) throw new Error(error.message);
