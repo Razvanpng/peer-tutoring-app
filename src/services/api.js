@@ -134,5 +134,22 @@ export const profilesApi = {
       .eq('role', 'mentor');
     if (error) throw new Error(error.message);
     return data;
+  },
+
+  uploadAvatar: async (userId, file) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}-${Math.random()}.${fileExt}`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, file);
+
+    if (uploadError) throw new Error(uploadError.message);
+
+    const { data } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(fileName);
+
+    return data.publicUrl;
   }
 };
