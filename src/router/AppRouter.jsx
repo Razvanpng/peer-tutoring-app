@@ -28,24 +28,19 @@ export default function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Toate rutele de aici în jos necesită autentificare */}
         <Route element={<ProtectedRoute />}>
           
-          {/* MainLayout "învelește" rutele care au nevoie de bara de navigare de sus */}
           <Route element={<MainLayout />}>
             
-            {/* Rute specifice Mentee */}
             <Route element={<RoleRoute role="mentee" />}>
               <Route path="/mentee/dashboard" element={<MenteeDashboard />} />
               <Route path="/mentee/directory" element={<MentorDirectory />} />
             </Route>
 
-            {/* Rute specifice Mentor */}
             <Route element={<RoleRoute role="mentor" />}>
               <Route path="/mentor/dashboard" element={<MentorDashboard />} />
             </Route>
 
-            {/* Rute comune (ambele roluri au acces) */}
             <Route path="/profile" element={<ProfileSettings />} />
           </Route>
 
