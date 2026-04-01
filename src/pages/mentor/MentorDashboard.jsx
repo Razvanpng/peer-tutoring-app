@@ -52,7 +52,7 @@ function PendingSessionCard({ session, onAccept, isAccepting }) {
         <button
           onClick={() => onAccept(session.id)}
           disabled={isAccepting}
-          className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-[#05090f] text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
+          className="w-full py-2 px-2 bg-emerald-500 hover:bg-emerald-400 text-[#05090f] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
         >
           {isAccepting ? 'Processing...' : 'Accept Connection'}
         </button>
@@ -78,7 +78,7 @@ function ActiveSessionCard({ session }) {
       <div className="pt-5 mt-auto border-t border-white/5">
         <button
           onClick={() => navigate(`/session/${session.id}`)}
-          className="w-full py-2 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-[10px] font-bold uppercase tracking-widest transition-colors"
+          className="w-full py-2 px-2 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-colors"
         >
           Open Interface
         </button>

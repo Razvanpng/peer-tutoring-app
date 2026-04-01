@@ -16,9 +16,9 @@ function StatusBadge({ status }) {
   const styles = {
     pending:  'text-amber-400 border-amber-400/20 bg-amber-400/5',
     accepted: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5',
-    completed: 'text-zinc-400 border-white/5 bg-white/[0.02]',
+    closed:   'text-zinc-400 border-white/5 bg-white/[0.02]',
   };
-  const currentStyle = styles[status] || styles.completed;
+  const currentStyle = styles[status] || styles.closed;
 
   return (
     <span className={`px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest border ${currentStyle}`}>
@@ -29,7 +29,7 @@ function StatusBadge({ status }) {
 
 function SessionCard({ session }) {
   const navigate = useNavigate();
-  const isActionable = session.status === 'accepted' || session.status === 'completed';
+  const isActionable = session.status === 'accepted' || session.status === 'closed';
 
   return (
     <div className="group flex flex-col justify-between p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors relative min-h-[160px]">
@@ -53,7 +53,7 @@ function SessionCard({ session }) {
         <button
           onClick={() => navigate(`/session/${session.id}`)}
           disabled={!isActionable}
-          className={`w-full py-2.5 text-xs font-bold uppercase tracking-widest transition-all ${
+          className={`w-full py-2 px-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all ${
             isActionable
               ? 'bg-emerald-500 text-[#05090f] hover:bg-emerald-400'
               : 'bg-white/5 text-zinc-500 cursor-not-allowed'
@@ -92,7 +92,7 @@ export default function MenteeDashboard() {
   });
 
   const activeSessions = menteeSessions.filter((s) => s.status === 'accepted' || s.status === 'pending');
-  const pastSessions = menteeSessions.filter((s) => s.status === 'completed');
+  const pastSessions = menteeSessions.filter((s) => s.status === 'closed');
 
   if (isError) {
     return (
