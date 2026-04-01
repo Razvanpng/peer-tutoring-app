@@ -173,48 +173,46 @@ function SessionHeader({ session, onBack, onClose, isClosing, isEditorOpen, onTo
   const style = STATUS_STYLES[session.status] ?? STATUS_STYLES.completed;
 
   return (
-    <header className="bg-[#05090f] border-b border-white/[0.04] shrink-0">
-      <div className="px-6 h-16 flex items-center justify-between gap-6">
-        <div className="flex items-center gap-6 min-w-0">
-          <button onClick={onBack} className="text-zinc-500 hover:text-white transition-colors p-2 -ml-2" aria-label="Go back">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
-          </button>
-          <div className="w-px h-6 bg-white/10" />
-          <p className="text-sm font-semibold text-white truncate tracking-tight">{session.topic}</p>
-        </div>
+    <header className="h-16 shrink-0 bg-[#05090f] border-b border-white/[0.04] px-6 lg:px-10 flex items-center justify-between z-10 shadow-sm">
+      <div className="flex items-center gap-6 min-w-0">
+        <button onClick={onBack} className="text-zinc-500 hover:text-white transition-colors p-2 -ml-2" aria-label="Go back">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
+            <path d="M19 12H5M12 5l-7 7 7 7" />
+          </svg>
+        </button>
+        <div className="w-px h-6 bg-white/10" />
+        <p className="text-base font-bold text-white truncate tracking-tight">{session.topic}</p>
+      </div>
 
-        <div className="flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-4 shrink-0">
+        <button
+          onClick={onToggleEditor}
+          className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 transition-colors border ${
+            isEditorOpen
+              ? 'bg-emerald-500 text-[#05090f] border-emerald-500 hover:bg-emerald-400'
+              : 'text-zinc-400 border-white/10 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+          Workspace
+        </button>
+
+        {session.status === 'accepted' && (
           <button
-            onClick={onToggleEditor}
-            className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-4 py-2 transition-colors border ${
-              isEditorOpen
-                ? 'bg-emerald-500 text-[#05090f] border-emerald-500 hover:bg-emerald-400'
-                : 'text-zinc-400 border-white/10 hover:text-white hover:bg-white/5'
-            }`}
+            onClick={onClose}
+            disabled={isClosing}
+            className="text-[10px] font-bold text-zinc-400 border border-white/10 px-5 py-2.5 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-widest disabled:opacity-50"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
-              <polyline points="16 18 22 12 16 6" />
-              <polyline points="8 6 2 12 8 18" />
-            </svg>
-            Workspace
+            {isClosing ? 'Closing...' : 'Terminate Session'}
           </button>
+        )}
 
-          {session.status === 'accepted' && (
-            <button
-              onClick={onClose}
-              disabled={isClosing}
-              className="text-[10px] font-bold text-zinc-400 border border-white/10 px-4 py-2 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-widest disabled:opacity-50"
-            >
-              {isClosing ? 'Closing...' : 'Terminate Session'}
-            </button>
-          )}
-
-          <span className={`text-[9px] font-mono uppercase tracking-widest border px-3 py-1 ${style}`}>
-            {session.status}
-          </span>
-        </div>
+        <span className={`text-[10px] font-bold uppercase tracking-widest border px-4 py-2 ${style}`}>
+          {session.status}
+        </span>
       </div>
     </header>
   );
@@ -349,13 +347,10 @@ export default function SessionView() {
 
   if (sessionLoading) {
     return (
-      <div className="fixed inset-0 z-[100] bg-[#05090f] bg-grain flex flex-col font-sans">
-        <div className="bg-[#05090f] border-b border-white/[0.04] h-16 shrink-0" />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-6">
-            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Loading...</p>
-          </div>
+      <div className="absolute inset-0 z-50 bg-[#05090f]/95 backdrop-blur-xl flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-8 h-8 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
+          <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Loading...</p>
         </div>
       </div>
     );
@@ -363,7 +358,7 @@ export default function SessionView() {
 
   if (sessionError || !session) {
     return (
-      <div className="fixed inset-0 z-[100] bg-[#05090f] bg-grain flex flex-col font-sans items-center justify-center p-6">
+      <div className="absolute inset-0 z-50 bg-[#05090f]/95 backdrop-blur-xl flex items-center justify-center font-sans p-6">
         <div className="border border-red-500/20 bg-red-500/5 p-10 text-center max-w-md w-full">
           <p className="text-sm font-bold text-white mb-2">Node Unreachable</p>
           <p className="text-xs text-zinc-500 mb-6 leading-relaxed">The requested session has been purged or you lack sufficient clearance.</p>
@@ -376,8 +371,8 @@ export default function SessionView() {
   }
 
   const chatColumn = (
-    <div className="flex flex-col flex-1 h-full bg-[#0a0f16] border border-white/[0.04] overflow-hidden relative">
-      <div className="flex-1 overflow-y-auto scrollbar-none p-6 space-y-4">
+    <div className="flex flex-col flex-1 h-full bg-[#0a0f16] border border-white/[0.04] overflow-hidden relative shadow-2xl">
+      <div className="flex-1 overflow-y-auto scrollbar-none p-6 lg:p-8 space-y-6">
         {messagesLoading ? (
           <div className="space-y-4">
             {[...Array(4)].map((_, i) => (
@@ -400,11 +395,11 @@ export default function SessionView() {
 
       <div className="shrink-0 bg-[#05090f] border-t border-white/[0.04]">
         {isClosed ? (
-          <div className="p-4 flex items-center justify-center">
+          <div className="p-5 flex items-center justify-center">
             <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">Connection Terminated</p>
           </div>
         ) : (
-          <div className="p-4 space-y-3">
+          <div className="p-5 space-y-4">
             {typingUser && (
               <div className="flex items-center gap-2 px-2">
                 <span className="flex gap-1">
@@ -427,11 +422,11 @@ export default function SessionView() {
               </div>
             )}
 
-            <form onSubmit={handleSend} className="flex items-end gap-3">
+            <form onSubmit={handleSend} className="flex items-end gap-4">
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
-              <button type="button" onClick={() => fileInputRef.current?.click()} className="shrink-0 p-3 text-zinc-500 border border-white/10 bg-white/[0.02] hover:text-white hover:bg-white/5 transition-colors" aria-label="Attach file">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="shrink-0 p-3.5 text-zinc-500 border border-white/10 bg-white/[0.02] hover:text-white hover:bg-white/5 transition-colors" aria-label="Attach file">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                 </svg>
               </button>
@@ -443,10 +438,10 @@ export default function SessionView() {
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}
                 placeholder="Type command..."
-                className="flex-1 bg-white/[0.02] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-emerald-500/50 resize-none leading-relaxed"
+                className="flex-1 bg-white/[0.02] border border-white/10 px-4 py-3.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-emerald-500/50 resize-none leading-relaxed"
               />
 
-              <button type="submit" disabled={(!content.trim() && !imageFile) || isSending} className="shrink-0 bg-emerald-500 text-[#05090f] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed">
+              <button type="submit" disabled={(!content.trim() && !imageFile) || isSending} className="shrink-0 bg-emerald-500 text-[#05090f] px-8 py-3.5 text-xs font-bold uppercase tracking-widest transition-colors hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed">
                 {isSending ? 'Tx...' : 'Send'}
               </button>
             </form>
@@ -457,61 +452,29 @@ export default function SessionView() {
   );
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#05090f] bg-grain flex flex-col font-sans overflow-hidden">
-      
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden hidden xl:block">
-        <div className="absolute top-[20%] left-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
-        
-        <div className="absolute inset-y-0 left-[3%] w-px bg-white/[0.03]" />
-        <div className="absolute inset-y-0 left-[5%] w-px bg-white/[0.02]" />
-        <div className="absolute top-[20%] left-[3%] -translate-x-1/2 w-2 h-px bg-white/20" />
-        <div className="absolute top-[25%] left-[3%] -translate-x-1/2 w-1 h-px bg-white/20" />
-        <div className="absolute top-[30%] left-[3%] -translate-x-1/2 w-2 h-px bg-white/20" />
-        <div className="absolute bottom-32 left-[4%] text-[9px] font-mono text-zinc-600 tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180">
-          NODE.01_ACTIVE // SEC.A
-        </div>
-        <div className="absolute top-1/2 left-[3%] -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 opacity-20">
-          {[...Array(15)].map((_, i) => <div key={i} className="w-1 h-px bg-white" />)}
-        </div>
+    <div className="absolute inset-0 z-50 flex flex-col bg-[#05090f]/95 backdrop-blur-xl animate-fade-in">
+      <SessionHeader
+        session={session}
+        onBack={() => navigate(-1)}
+        onClose={() => closeMutation.mutate()}
+        isClosing={closeMutation.isPending}
+        isEditorOpen={isEditorOpen}
+        onToggleEditor={() => setIsEditorOpen((prev) => !prev)}
+      />
 
-        <div className="absolute inset-y-0 right-[3%] w-px bg-white/[0.03]" />
-        <div className="absolute inset-y-0 right-[5%] w-px bg-white/[0.02]" />
-        <div className="absolute bottom-[20%] right-[3%] translate-x-1/2 w-2 h-px bg-white/20" />
-        <div className="absolute bottom-[25%] right-[3%] translate-x-1/2 w-1 h-px bg-white/20" />
-        <div className="absolute bottom-[30%] right-[3%] translate-x-1/2 w-2 h-px bg-white/20" />
-        <div className="absolute top-32 right-[4%] text-[9px] font-mono text-zinc-600 tracking-[0.4em] uppercase [writing-mode:vertical-rl]">
-          SYSTEMS NOMINAL // SEC.B
-        </div>
-        <div className="absolute top-1/2 right-[3%] translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 opacity-20">
-          {[...Array(15)].map((_, i) => <div key={i} className="w-1 h-px bg-white" />)}
-        </div>
-      </div>
-
-      <div className="w-full max-w-[1600px] mx-auto border-x border-white/[0.04] h-full flex flex-col bg-[#05090f]/50 relative z-10 shadow-[0_0_100px_rgba(0,0,0,0.5)]">
-        <SessionHeader
-          session={session}
-          onBack={() => navigate(-1)}
-          onClose={() => closeMutation.mutate()}
-          isClosing={closeMutation.isPending}
-          isEditorOpen={isEditorOpen}
-          onToggleEditor={() => setIsEditorOpen((prev) => !prev)}
-        />
-
-        <div className="flex-1 p-6 overflow-hidden flex flex-col">
-          {isEditorOpen ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full flex-1 min-h-0">
-              {chatColumn}
-              <div className="hidden lg:flex flex-col h-full min-h-0">
-                <CodeEditor sessionId={id} userName={editorUserName} onClose={() => setIsEditorOpen(false)} />
-              </div>
+      <div className="flex-1 p-6 lg:p-8 overflow-hidden flex flex-col min-h-0 relative z-10">
+        {isEditorOpen ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full flex-1 min-h-0">
+            {chatColumn}
+            <div className="hidden lg:flex flex-col h-full min-h-0 shadow-2xl border border-white/[0.04]">
+              <CodeEditor sessionId={id} userName={editorUserName} onClose={() => setIsEditorOpen(false)} />
             </div>
-          ) : (
-            <div className="max-w-3xl mx-auto w-full h-full flex-1 min-h-0">
-              {chatColumn}
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto w-full h-full flex-1 min-h-0">
+            {chatColumn}
+          </div>
+        )}
       </div>
     </div>
   );
