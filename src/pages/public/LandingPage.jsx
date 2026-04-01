@@ -48,10 +48,10 @@ export default function LandingPage() {
       <main className="flex-1 min-h-0 w-full flex flex-col lg:flex-row relative">
         <div className="absolute inset-0 bg-subtle-grid opacity-30 pointer-events-none" style={{ maskImage: 'linear-gradient(to right, black 50%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 50%, transparent 100%)' }} />
 
-        <div className="relative z-10 w-full lg:w-[55%] xl:w-[50%] h-full flex flex-col justify-between border-r border-white/[0.04] bg-[#05090f]/80 p-6 lg:p-12 xl:p-16 overflow-y-auto scrollbar-none">
-          <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto lg:mx-0 w-full">
+        <div className="relative z-10 w-full lg:w-[55%] xl:w-[50%] h-full flex flex-col justify-center border-r border-white/[0.04] bg-[#05090f]/80 p-6 lg:p-12 xl:p-16 overflow-y-auto scrollbar-none">
+          <div className="w-full max-w-2xl mx-auto lg:mx-0 pt-4 pb-12">
             
-            <div className="flex items-center gap-4 text-[10px] font-semibold text-zinc-500 tracking-[0.2em] uppercase mb-8 opacity-0 animate-reveal-up">
+            <div className="flex items-center gap-4 text-[10px] font-semibold text-zinc-500 tracking-[0.2em] uppercase mb-6 opacity-0 animate-reveal-up">
               <span className="w-8 h-px bg-emerald-500/50" />
               Platform Beta Active
             </div>
@@ -82,16 +82,17 @@ export default function LandingPage() {
                 Log in instead
               </Link>
             </div>
-          </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-12 mt-12 border-t border-white/[0.04] opacity-0 animate-fade-in shrink-0" style={{ animationDelay: '0.6s' }}>
+              {FEATURES.map((f) => (
+                <div key={f.id} className="flex flex-col gap-3 group relative p-4 -ml-4 rounded-xl hover:bg-white/[0.02] border border-transparent hover:border-white/[0.04] transition-all duration-300 hover:-translate-y-1">
+                  <span className="text-xs text-emerald-500 font-bold tracking-widest">{f.id}</span>
+                  <h3 className="text-base font-semibold text-zinc-200 tracking-tight">{f.title}</h3>
+                  <p className="text-sm text-zinc-500 leading-relaxed pr-2">{f.description}</p>
+                </div>
+              ))}
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-white/[0.04] opacity-0 animate-fade-in shrink-0" style={{ animationDelay: '0.6s' }}>
-            {FEATURES.map((f) => (
-              <div key={f.id} className="flex flex-col gap-2 group">
-                <span className="text-[10px] text-emerald-500 font-bold tracking-widest mb-1">{f.id}</span>
-                <h3 className="text-sm font-semibold text-zinc-200 tracking-tight">{f.title}</h3>
-                <p className="text-xs text-zinc-500 leading-relaxed pr-4">{f.description}</p>
-              </div>
-            ))}
           </div>
         </div>
         

@@ -118,7 +118,7 @@ export default function MainLayout() {
   const links = authProfile?.role === 'mentor' ? MENTOR_LINKS : MENTEE_LINKS;
 
   return (
-    <div className="min-h-screen bg-[#05090f] bg-grain relative">
+    <div className="min-h-screen bg-[#05090f] bg-grain relative font-sans">
       <header className="sticky top-0 z-40 bg-[#05090f]/90 backdrop-blur-xl border-b border-white/[0.04] supports-[backdrop-filter]:bg-[#05090f]/60">
         <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between gap-6">
           <div className="flex items-center gap-12">
