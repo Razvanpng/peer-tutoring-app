@@ -181,7 +181,7 @@ function ReviewSection({ session, userId, onReviewSuccess }) {
   );
 }
 
-function SessionHeader({ session, onBack, onClose, isClosing }) {
+function SessionHeader({ session, onBack, onClose, isClosing, isEditorOpen, onToggleEditor }) {
   const STATUS_STYLES = {
     pending:  'bg-amber-50 text-amber-700 border-amber-200',
     accepted: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -208,6 +208,22 @@ function SessionHeader({ session, onBack, onClose, isClosing }) {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={onToggleEditor}
+            title="Toggle code workspace"
+            className={`flex items-center gap-1.5 text-xs font-medium border rounded-lg px-3 py-1.5 transition focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 ${
+              isEditorOpen
+                ? 'bg-slate-800 border-slate-800 text-white'
+                : 'text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+            Code
+          </button>
+
           {session.status === 'accepted' && (
             <button
               onClick={onClose}
@@ -217,6 +233,7 @@ function SessionHeader({ session, onBack, onClose, isClosing }) {
               {isClosing ? 'Closing…' : 'Mark as Completed'}
             </button>
           )}
+
           <span className={`text-xs font-medium border rounded-full px-2.5 py-0.5 capitalize ${style}`}>
             {session.status}
           </span>
@@ -238,6 +255,7 @@ export default function SessionView() {
   const [imagePreview, setImagePreview] = useState(null);
   const [typingUser, setTypingUser] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
@@ -396,6 +414,142 @@ export default function SessionView() {
     );
   }
 
+  const chatColumn = (
+    <div className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden bg-white border border-slate-200 rounded-xl shadow-sm">
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-4 py-5 space-y-3">
+          {messagesLoading ? (
+            <div className="space-y-3 pt-2">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                  <div
+                    className="h-10 rounded-2xl bg-slate-200 animate-pulse"
+                    style={{ width: `${32 + (i * 11) % 28}%` }}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-2">
+              <p className="text-sm text-slate-400">No messages yet.</p>
+              <p className="text-xs text-slate-400">Send the first message below.</p>
+            </div>
+          ) : (
+            messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                isOwn={message.sender_id === user.id}
+              />
+            ))
+          )}
+          <div ref={bottomRef} />
+        </div>
+
+        <ReviewSection
+          session={session}
+          userId={user.id}
+          onReviewSuccess={handleReviewSuccess}
+        />
+      </div>
+
+      <div className={`border-t shrink-0 ${isClosed ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-200'}`}>
+        {isClosed ? (
+          <div className="px-4 py-4 flex items-center justify-center">
+            <p className="text-xs text-slate-400">Session is closed</p>
+          </div>
+        ) : (
+          <div className="px-4 pt-2 pb-3 space-y-2">
+            {typingUser && (
+              <div className="flex items-center gap-1.5 px-1">
+                <span className="flex gap-0.5">
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="w-1 h-1 rounded-full bg-slate-400 animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </span>
+                <p className="text-xs text-slate-400">Someone is typing…</p>
+              </div>
+            )}
+
+            {imagePreview && (
+              <div className="relative inline-block">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-16 w-16 rounded-lg object-cover border border-slate-200"
+                />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-slate-900 transition"
+                  aria-label="Remove image"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            <form onSubmit={handleSend} className="flex items-end gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="shrink-0 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                aria-label="Attach image"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+              </button>
+
+              <textarea
+                ref={inputRef}
+                rows={1}
+                value={content}
+                onChange={handleTextareaChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Write a message… (Enter to send)"
+                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none leading-relaxed"
+              />
+
+              <button
+                type="submit"
+                disabled={(!content.trim() && !imageFile) || isSending}
+                className="shrink-0 rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isSending ? (
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Sending
+                  </span>
+                ) : (
+                  'Send'
+                )}
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
       <SessionHeader
@@ -403,148 +557,27 @@ export default function SessionView() {
         onBack={() => navigate(-1)}
         onClose={() => closeMutation.mutate()}
         isClosing={closeMutation.isPending}
+        isEditorOpen={isEditorOpen}
+        onToggleEditor={() => setIsEditorOpen((prev) => !prev)}
       />
 
-      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-4 lg:p-4">
-
-        <div className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden bg-slate-50 lg:rounded-xl lg:border lg:border-slate-200 lg:bg-white lg:shadow-sm">
-          <div className="flex-1 overflow-y-auto">
-            <div className="px-4 py-5 space-y-3">
-              {messagesLoading ? (
-                <div className="space-y-3 pt-2">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                      <div
-                        className="h-10 rounded-2xl bg-slate-200 animate-pulse"
-                        style={{ width: `${32 + (i * 11) % 28}%` }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 gap-2">
-                  <p className="text-sm text-slate-400">No messages yet.</p>
-                  <p className="text-xs text-slate-400">Send the first message below.</p>
-                </div>
-              ) : (
-                messages.map((message) => (
-                  <MessageBubble
-                    key={message.id}
-                    message={message}
-                    isOwn={message.sender_id === user.id}
-                  />
-                ))
-              )}
-              <div ref={bottomRef} />
+      <div className="flex-1 overflow-hidden p-4">
+        {isEditorOpen ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
+            {chatColumn}
+            <div className="hidden lg:flex flex-col h-[calc(100vh-8rem)]">
+              <CodeEditor
+                sessionId={id}
+                userName={editorUserName}
+                onClose={() => setIsEditorOpen(false)}
+              />
             </div>
-
-            <ReviewSection
-              session={session}
-              userId={user.id}
-              onReviewSuccess={handleReviewSuccess}
-            />
           </div>
-
-          <div className={`border-t shrink-0 ${isClosed ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-200'}`}>
-            {isClosed ? (
-              <div className="px-4 py-4 flex items-center justify-center">
-                <p className="text-xs text-slate-400">Session is closed</p>
-              </div>
-            ) : (
-              <div className="px-4 pt-2 pb-3 space-y-2">
-                {typingUser && (
-                  <div className="flex items-center gap-1.5 px-1">
-                    <span className="flex gap-0.5">
-                      {[0, 1, 2].map((i) => (
-                        <span
-                          key={i}
-                          className="w-1 h-1 rounded-full bg-slate-400 animate-bounce"
-                          style={{ animationDelay: `${i * 0.15}s` }}
-                        />
-                      ))}
-                    </span>
-                    <p className="text-xs text-slate-400">Someone is typing…</p>
-                  </div>
-                )}
-
-                {imagePreview && (
-                  <div className="relative inline-block">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="h-16 w-16 rounded-lg object-cover border border-slate-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-slate-900 transition"
-                      aria-label="Remove image"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
-
-                <form onSubmit={handleSend} className="flex items-end gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="shrink-0 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
-                    aria-label="Attach image"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                    </svg>
-                  </button>
-
-                  <textarea
-                    ref={inputRef}
-                    rows={1}
-                    value={content}
-                    onChange={handleTextareaChange}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Write a message… (Enter to send)"
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none leading-relaxed"
-                  />
-
-                  <button
-                    type="submit"
-                    disabled={(!content.trim() && !imageFile) || isSending}
-                    className="shrink-0 rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    {isSending ? (
-                      <span className="flex items-center gap-1.5">
-                        <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                        </svg>
-                        Sending
-                      </span>
-                    ) : (
-                      'Send'
-                    )}
-                  </button>
-                </form>
-              </div>
-            )}
+        ) : (
+          <div className="max-w-2xl mx-auto w-full h-full">
+            {chatColumn}
           </div>
-        </div>
-
-        <div className="hidden lg:flex flex-col h-[calc(100vh-8rem)]">
-          <CodeEditor sessionId={id} userName={editorUserName} />
-        </div>
-
+        )}
       </div>
     </div>
   );
