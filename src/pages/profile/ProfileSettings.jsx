@@ -62,7 +62,7 @@ export default function ProfileSettings() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl animate-pulse space-y-6">
+      <div className="max-w-2xl mx-auto animate-pulse space-y-6">
         <div className="h-8 w-48 bg-white/5" />
         <div className="h-[400px] border border-white/5 bg-white/[0.01]" />
       </div>
@@ -70,7 +70,7 @@ export default function ProfileSettings() {
   }
 
   return (
-    <div className="max-w-2xl space-y-8 animate-fade-in">
+    <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
       
       <div className="border-b border-white/5 pb-6">
         <h1 className="text-3xl font-bold text-white tracking-tighter">Configuration</h1>
@@ -80,9 +80,9 @@ export default function ProfileSettings() {
       <form onSubmit={handleSubmit} className="space-y-8">
         
         <div className="flex items-start gap-6 pb-8 border-b border-white/5">
-          <div className="w-20 h-20 bg-[#05090f] border border-white/10 shrink-0 flex items-center justify-center relative group">
+          <div className="w-20 h-20 bg-[#05090f] border border-white/10 shrink-0 flex items-center justify-center relative">
             {avatarUrl ? (
-              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
               <span className="text-xl font-mono text-zinc-500">{fullName?.[0] || '?'}</span>
             )}

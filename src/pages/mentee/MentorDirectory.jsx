@@ -101,9 +101,9 @@ function MentorCard({ mentor }) {
     <div className="flex flex-col p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-colors relative min-h-[220px]">
       
       <div className="flex items-start gap-4 mb-4">
-        <div className="w-12 h-12 bg-zinc-900 border border-white/10 shrink-0 flex items-center justify-center">
+        <div className="w-12 h-12 border border-white/10 shrink-0 flex items-center justify-center bg-[#05090f]">
           {mentor.avatar_url ? (
-            <img src={mentor.avatar_url} alt={displayName} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" />
+            <img src={mentor.avatar_url} alt={displayName} className="w-full h-full object-cover" />
           ) : (
             <span className="text-sm font-mono text-zinc-500 select-none">{initials}</span>
           )}
@@ -206,7 +206,7 @@ export default function MentorDirectory() {
   const hasActiveFilters = searchQuery.trim() !== '' || selectedSubject !== 'All';
 
   return (
-    <div className="space-y-10 animate-fade-in">
+    <div className="space-y-10 animate-fade-in max-w-6xl mx-auto">
       
       <section className="flex flex-col md:flex-row gap-6 items-end justify-between pb-6 border-b border-white/5">
         <div>

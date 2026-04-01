@@ -39,12 +39,12 @@ function UserAvatar({ profile }) {
   const initial = (profile?.full_name?.[0] || profile?.email?.[0] || '?').toUpperCase();
 
   return (
-    <div className="w-8 h-8 rounded-full border border-white/10 bg-zinc-900/50 overflow-hidden shrink-0 flex items-center justify-center">
+    <div className="w-8 h-8 border border-white/10 bg-zinc-900/50 overflow-hidden shrink-0 flex items-center justify-center">
       {profile?.avatar_url ? (
         <img
           src={profile.avatar_url}
           alt={profile.full_name || 'Avatar'}
-          className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300"
+          className="w-full h-full object-cover"
         />
       ) : (
         <span className="text-xs font-semibold text-zinc-400 select-none">
@@ -103,7 +103,7 @@ export default function MainLayout() {
             addToast('Your session request was accepted!', 'success');
           }
 
-          if (payload.eventType === 'UPDATE' && payload.new?.status === 'closed') {
+          if (payload.eventType === 'UPDATE' && payload.new?.status === 'completed') {
             addToast('A session has been marked as completed.', 'info');
           }
         }
@@ -118,45 +118,47 @@ export default function MainLayout() {
   const links = authProfile?.role === 'mentor' ? MENTOR_LINKS : MENTEE_LINKS;
 
   return (
-    <div className="min-h-screen bg-[#05090f] bg-grain relative font-sans">
-      <header className="sticky top-0 z-40 bg-[#05090f]/90 backdrop-blur-xl border-b border-white/[0.04] supports-[backdrop-filter]:bg-[#05090f]/60">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between gap-6">
-          <div className="flex items-center gap-12">
-            <Link to="/" className="shrink-0 flex items-center gap-3 group">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 group-hover:scale-125 transition-transform" />
-              <span className="text-sm font-semibold tracking-widest text-zinc-100 uppercase">
-                PeerTutor
-              </span>
-            </Link>
+    <div className="min-h-screen bg-[#05090f] bg-grain relative font-sans flex flex-col items-center">
+      <div className="w-full max-w-[1600px] border-x border-white/[0.04] min-h-screen flex flex-col relative bg-[#05090f]/50">
+        <header className="sticky top-0 z-40 bg-[#05090f]/90 backdrop-blur-xl border-b border-white/[0.04]">
+          <div className="w-full px-6 md:px-12 h-16 flex items-center justify-between gap-6">
+            <div className="flex items-center gap-12">
+              <Link to="/" className="shrink-0 flex items-center gap-3 group">
+                <div className="w-2 h-2 bg-emerald-500 group-hover:scale-125 transition-transform" />
+                <span className="text-sm font-semibold tracking-widest text-zinc-100 uppercase">
+                  PeerTutor
+                </span>
+              </Link>
 
-            <nav className="hidden md:flex items-center gap-6">
-              {links.map(({ label, to }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  label={label}
-                  active={location.pathname === to}
-                />
-              ))}
-            </nav>
+              <nav className="hidden md:flex items-center gap-6">
+                {links.map(({ label, to }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    label={label}
+                    active={location.pathname === to}
+                  />
+                ))}
+              </nav>
+            </div>
+
+            <div className="flex items-center gap-6 shrink-0">
+              <button
+                onClick={signOut}
+                className="text-xs font-semibold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors duration-200"
+              >
+                Sign out
+              </button>
+              <div className="w-px h-4 bg-white/10" />
+              <UserAvatar profile={fullProfile ?? { email: user?.email, ...authProfile }} />
+            </div>
           </div>
+        </header>
 
-          <div className="flex items-center gap-6 shrink-0">
-            <button
-              onClick={signOut}
-              className="text-xs font-semibold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors duration-200"
-            >
-              Sign out
-            </button>
-            <div className="w-px h-4 bg-white/10" />
-            <UserAvatar profile={fullProfile ?? { email: user?.email, ...authProfile }} />
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-6 md:px-12 py-10 relative z-10">
-        <Outlet />
-      </main>
+        <main className="w-full px-6 md:px-12 py-10 relative z-10 flex-1">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

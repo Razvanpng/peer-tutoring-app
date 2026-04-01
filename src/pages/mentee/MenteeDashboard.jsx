@@ -16,9 +16,9 @@ function StatusBadge({ status }) {
   const styles = {
     pending:  'text-amber-400 border-amber-400/20 bg-amber-400/5',
     accepted: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5',
-    closed:   'text-zinc-400 border-white/5 bg-white/[0.02]',
+    completed: 'text-zinc-400 border-white/5 bg-white/[0.02]',
   };
-  const currentStyle = styles[status] || styles.closed;
+  const currentStyle = styles[status] || styles.completed;
 
   return (
     <span className={`px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest border ${currentStyle}`}>
@@ -29,7 +29,7 @@ function StatusBadge({ status }) {
 
 function SessionCard({ session }) {
   const navigate = useNavigate();
-  const isActionable = session.status === 'accepted' || session.status === 'closed';
+  const isActionable = session.status === 'accepted' || session.status === 'completed';
 
   return (
     <div className="group flex flex-col justify-between p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors relative min-h-[160px]">
@@ -91,8 +91,8 @@ export default function MenteeDashboard() {
     queryFn: () => sessionsApi.getMenteeSessions(user.id),
   });
 
-  const activeSessions = menteeSessions.filter((s) => s.status !== 'closed');
-  const pastSessions = menteeSessions.filter((s) => s.status === 'closed');
+  const activeSessions = menteeSessions.filter((s) => s.status === 'accepted' || s.status === 'pending');
+  const pastSessions = menteeSessions.filter((s) => s.status === 'completed');
 
   if (isError) {
     return (
@@ -103,7 +103,7 @@ export default function MenteeDashboard() {
   }
 
   return (
-    <div className="space-y-16 animate-fade-in">
+    <div className="space-y-16 animate-fade-in max-w-6xl mx-auto">
       
       <section>
         <h2 className="text-sm font-semibold text-zinc-100 uppercase tracking-widest mb-6">Metrics</h2>

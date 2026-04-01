@@ -160,7 +160,7 @@ export default function MentorDashboard() {
   });
 
   return (
-    <div className="space-y-16 animate-fade-in">
+    <div className="space-y-16 animate-fade-in max-w-6xl mx-auto">
       
       <section>
         <div className="flex items-end justify-between mb-6 pb-4 border-b border-white/5">

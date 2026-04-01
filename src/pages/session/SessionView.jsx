@@ -9,28 +9,25 @@ import CodeEditor from '../../components/session/CodeEditor';
 
 function MessageBubble({ message, isOwn }) {
   return (
-    <div className={`flex items-end gap-2 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+    <div className={`flex items-end gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
       <div
-        className={`max-w-[72%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
+        className={`max-w-[75%] px-5 py-3 text-sm leading-relaxed ${
           isOwn
-            ? 'bg-slate-800 text-white rounded-br-sm'
-            : 'bg-white border border-slate-200 text-slate-800 rounded-bl-sm'
+            ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-50'
+            : 'bg-white/[0.02] border border-white/10 text-zinc-300'
         }`}
       >
         {message.image_url && (
           <img
             src={message.image_url}
             alt="Attachment"
-            className="max-w-xs rounded-lg mb-1 cursor-pointer object-cover"
+            className="max-w-xs mb-2 cursor-pointer object-cover border border-white/10"
             onClick={() => window.open(message.image_url, '_blank')}
           />
         )}
         {message.content && <p>{message.content}</p>}
-        <p className="text-[10px] mt-1 text-slate-400 text-right">
-          {new Date(message.created_at).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
+        <p className={`text-[9px] mt-2 font-mono uppercase tracking-widest ${isOwn ? 'text-emerald-500/50 text-right' : 'text-zinc-600 text-right'}`}>
+          {new Date(message.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
         </p>
       </div>
     </div>
@@ -39,15 +36,9 @@ function MessageBubble({ message, isOwn }) {
 
 function StarRating({ value }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
-        <svg
-          key={star}
-          xmlns="http://www.w3.org/2000/svg"
-          className={`w-4 h-4 ${star <= value ? 'text-amber-400' : 'text-slate-200'}`}
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
+        <svg key={star} xmlns="http://www.w3.org/2000/svg" className={`w-3.5 h-3.5 ${star <= value ? 'text-emerald-400' : 'text-white/10'}`} viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
         </svg>
       ))}
@@ -57,15 +48,15 @@ function StarRating({ value }) {
 
 function ReviewDisplay({ session }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
-      <div className="flex items-center gap-2">
+    <div className="bg-white/[0.01] border border-white/5 p-6 space-y-4">
+      <div className="flex items-center gap-3">
         <StarRating value={session.rating} />
-        <span className="text-xs text-slate-500 font-medium">{session.rating} / 5</span>
+        <span className="text-[10px] text-zinc-500 font-mono">{session.rating} / 5</span>
       </div>
       {session.review && (
-        <p className="text-sm text-slate-700 leading-relaxed">{session.review}</p>
+        <p className="text-sm text-zinc-400 leading-relaxed italic border-l-2 border-white/10 pl-4">{session.review}</p>
       )}
-      <p className="text-xs text-slate-400">Review submitted by mentee</p>
+      <p className="text-[9px] text-zinc-600 uppercase tracking-widest font-mono">Review logged by mentee</p>
     </div>
   );
 }
@@ -83,7 +74,7 @@ function ReviewForm({ sessionId, onSuccess }) {
       onSuccess();
     },
     onError: (err) => {
-      setFormError(err.message ?? 'Failed to submit review. Please try again.');
+      setFormError(err.message ?? 'Transmission failed.');
     },
   });
 
@@ -93,15 +84,15 @@ function ReviewForm({ sessionId, onSuccess }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+    <form onSubmit={handleSubmit} className="bg-white/[0.01] border border-white/5 p-6 space-y-6">
       <div>
-        <p className="text-sm font-semibold text-slate-800">Leave a Review</p>
-        <p className="text-xs text-slate-500 mt-0.5">How was your session?</p>
+        <p className="text-sm font-semibold text-white tracking-tight">Log Review</p>
+        <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest font-mono">Evaluate execution</p>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block text-xs font-medium text-slate-700">Rating</label>
-        <div className="flex items-center gap-1">
+      <div className="space-y-2">
+        <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Rating</label>
+        <div className="flex items-center gap-1.5">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -109,40 +100,31 @@ function ReviewForm({ sessionId, onSuccess }) {
               onClick={() => setRating(star)}
               onMouseEnter={() => setHovered(star)}
               onMouseLeave={() => setHovered(null)}
-              className="focus:outline-none"
+              className="focus:outline-none p-1"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={`w-6 h-6 transition-colors ${
-                  star <= (hovered ?? rating) ? 'text-amber-400' : 'text-slate-200'
-                }`}
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 transition-colors ${star <= (hovered ?? rating) ? 'text-emerald-400' : 'text-white/10'}`} viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
               </svg>
             </button>
           ))}
-          <span className="ml-2 text-xs text-slate-500">{hovered ?? rating} / 5</span>
+          <span className="ml-3 text-[10px] text-zinc-500 font-mono">{hovered ?? rating} / 5</span>
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <label htmlFor="review" className="block text-xs font-medium text-slate-700">
-          Review
-        </label>
+      <div className="space-y-2">
+        <label htmlFor="review" className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Details</label>
         <textarea
           id="review"
           rows={3}
           value={review}
           onChange={(e) => setReview(e.target.value)}
-          placeholder="Share what you found helpful or what could be improved…"
-          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none"
+          placeholder="Enter telemetry data..."
+          className="w-full bg-[#05090f] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-zinc-700 outline-none transition-colors focus:border-emerald-500/50 resize-none"
         />
       </div>
 
       {formError && (
-        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-[10px] font-mono text-red-400 p-2 bg-red-500/10 border border-red-500/20">
           {formError}
         </p>
       )}
@@ -151,9 +133,9 @@ function ReviewForm({ sessionId, onSuccess }) {
         <button
           type="submit"
           disabled={reviewMutation.isPending}
-          className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-emerald-500 hover:bg-emerald-400 text-[#05090f] px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
         >
-          {reviewMutation.isPending ? 'Submitting…' : 'Submit review'}
+          {reviewMutation.isPending ? 'Logging...' : 'Commit Review'}
         </button>
       </div>
     </form>
@@ -161,19 +143,19 @@ function ReviewForm({ sessionId, onSuccess }) {
 }
 
 function ReviewSection({ session, userId, onReviewSuccess }) {
-  if (session.status !== 'closed') return null;
+  if (session.status !== 'completed') return null;
 
   return (
-    <div className="px-4 pb-6 space-y-2">
-      <div className="border-t border-slate-200 pt-5 space-y-3">
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Session Review</p>
+    <div className="px-6 pb-8 space-y-4">
+      <div className="border-t border-white/[0.04] pt-8 space-y-4">
+        <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Session Terminal</p>
         {session.rating != null ? (
           <ReviewDisplay session={session} />
         ) : userId === session.mentee_id ? (
           <ReviewForm sessionId={session.id} onSuccess={onReviewSuccess} />
         ) : (
-          <div className="bg-white border border-slate-200 rounded-xl p-5 text-center shadow-sm">
-            <p className="text-sm text-slate-400">No review has been submitted yet.</p>
+          <div className="border border-white/5 border-dashed p-6 text-center">
+            <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">Awaiting mentee review.</p>
           </div>
         )}
       </div>
@@ -183,58 +165,53 @@ function ReviewSection({ session, userId, onReviewSuccess }) {
 
 function SessionHeader({ session, onBack, onClose, isClosing, isEditorOpen, onToggleEditor }) {
   const STATUS_STYLES = {
-    pending:  'bg-amber-50 text-amber-700 border-amber-200',
-    accepted: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    closed:   'bg-slate-100 text-slate-500 border-slate-200',
+    pending:  'text-amber-400 border-amber-400/20 bg-amber-400/5',
+    accepted: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5',
+    completed: 'text-zinc-400 border-white/5 bg-white/[0.02]',
   };
 
-  const style = STATUS_STYLES[session.status] ?? STATUS_STYLES.closed;
+  const style = STATUS_STYLES[session.status] ?? STATUS_STYLES.completed;
 
   return (
-    <header className="bg-white border-b border-slate-200 shrink-0">
-      <div className="px-4 h-14 flex items-center gap-3">
-        <button
-          onClick={onBack}
-          className="text-slate-400 hover:text-slate-700 transition p-1 -ml-1 rounded-lg hover:bg-slate-100"
-          aria-label="Go back"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 5l-7 7 7 7" />
-          </svg>
-        </button>
-
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-800 truncate">{session.topic}</p>
+    <header className="bg-[#05090f] border-b border-white/[0.04] shrink-0">
+      <div className="max-w-[1600px] mx-auto border-x border-white/[0.04] px-6 h-16 flex items-center justify-between gap-6">
+        <div className="flex items-center gap-6 min-w-0">
+          <button onClick={onBack} className="text-zinc-500 hover:text-white transition-colors p-2 -ml-2" aria-label="Go back">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+          </button>
+          <div className="w-px h-6 bg-white/10" />
+          <p className="text-sm font-semibold text-white truncate tracking-tight">{session.topic}</p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-4 shrink-0">
           <button
             onClick={onToggleEditor}
-            title="Toggle code workspace"
-            className={`flex items-center gap-1.5 text-xs font-medium border rounded-lg px-3 py-1.5 transition focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 ${
+            className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-4 py-2 transition-colors border ${
               isEditorOpen
-                ? 'bg-slate-800 border-slate-800 text-white'
-                : 'text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+                ? 'bg-emerald-500 text-[#05090f] border-emerald-500 hover:bg-emerald-400'
+                : 'text-zinc-400 border-white/10 hover:text-white hover:bg-white/5'
             }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
               <polyline points="16 18 22 12 16 6" />
               <polyline points="8 6 2 12 8 18" />
             </svg>
-            Code
+            Workspace
           </button>
 
           {session.status === 'accepted' && (
             <button
               onClick={onClose}
               disabled={isClosing}
-              className="text-xs font-medium text-slate-600 border border-slate-200 rounded-lg px-3 py-1.5 hover:bg-slate-50 hover:border-slate-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-[10px] font-bold text-zinc-400 border border-white/10 px-4 py-2 hover:text-white hover:bg-white/5 transition-colors uppercase tracking-widest disabled:opacity-50"
             >
-              {isClosing ? 'Closing…' : 'Mark as Completed'}
+              {isClosing ? 'Closing...' : 'Terminate Session'}
             </button>
           )}
 
-          <span className={`text-xs font-medium border rounded-full px-2.5 py-0.5 capitalize ${style}`}>
+          <span className={`text-[9px] font-mono uppercase tracking-widest border px-3 py-1 ${style}`}>
             {session.status}
           </span>
         </div>
@@ -264,11 +241,7 @@ export default function SessionView() {
   const lastTypingSentRef = useRef(0);
   const typingTimeoutRef = useRef(null);
 
-  const {
-    data: session,
-    isLoading: sessionLoading,
-    isError: sessionError,
-  } = useQuery({
+  const { data: session, isLoading: sessionLoading, isError: sessionError } = useQuery({
     queryKey: ['session', id],
     queryFn: () => sessionsApi.getSession(id),
   });
@@ -280,7 +253,7 @@ export default function SessionView() {
   });
 
   const closeMutation = useMutation({
-    mutationFn: () => sessionsApi.updateSessionStatus(id, 'closed'),
+    mutationFn: () => sessionsApi.updateSessionStatus(id, 'completed'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['session', id] });
       addToast('Session marked as completed.', 'success');
@@ -292,7 +265,7 @@ export default function SessionView() {
 
   function handleReviewSuccess() {
     queryClient.invalidateQueries({ queryKey: ['session', id] });
-    addToast('Review submitted successfully.', 'success');
+    addToast('Review logged successfully.', 'success');
   }
 
   useEffect(() => {
@@ -308,7 +281,6 @@ export default function SessionView() {
       .subscribe();
 
     channelRef.current = channel;
-
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       supabase.removeChannel(channel);
@@ -319,11 +291,7 @@ export default function SessionView() {
     const now = Date.now();
     if (now - lastTypingSentRef.current < 2000) return;
     lastTypingSentRef.current = now;
-    channelRef.current?.send({
-      type: 'broadcast',
-      event: 'typing',
-      payload: { userId: user.id },
-    });
+    channelRef.current?.send({ type: 'broadcast', event: 'typing', payload: { userId: user.id } });
   }, [user.id]);
 
   useEffect(() => {
@@ -361,16 +329,14 @@ export default function SessionView() {
       setContent('');
       inputRef.current?.focus();
     } catch (err) {
-      addToast(err.message ?? 'Failed to send message.', 'error');
+      addToast(err.message ?? 'Transmission failed.', 'error');
     } finally {
       setIsSending(false);
     }
   }
 
   function handleKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      handleSend(e);
-    }
+    if (e.key === 'Enter' && !e.shiftKey) handleSend(e);
   }
 
   function handleTextareaChange(e) {
@@ -378,17 +344,17 @@ export default function SessionView() {
     sendTypingSignal();
   }
 
-  const isClosed = session?.status === 'closed';
+  const isClosed = session?.status === 'completed';
   const editorUserName = user?.user_metadata?.full_name || user?.email || 'Anonymous';
 
   if (sessionLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <div className="bg-white border-b border-slate-200 h-14 shrink-0" />
+      <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans">
+        <div className="bg-[#05090f] border-b border-white/[0.04] h-16 shrink-0" />
         <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-slate-500 animate-spin" />
-            <p className="text-xs text-slate-400">Loading session…</p>
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
+            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Loading...</p>
           </div>
         </div>
       </div>
@@ -397,17 +363,12 @@ export default function SessionView() {
 
   if (sessionError || !session) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4 px-4">
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-8 max-w-sm w-full text-center space-y-3">
-          <p className="text-sm font-semibold text-slate-800">Session not found</p>
-          <p className="text-xs text-slate-500">
-            This session may have been removed or you may not have access to it.
-          </p>
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-2 text-xs text-slate-500 underline underline-offset-2 hover:text-slate-800 transition"
-          >
-            Go back
+      <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans items-center justify-center p-6">
+        <div className="border border-red-500/20 bg-red-500/5 p-10 text-center max-w-md w-full">
+          <p className="text-sm font-bold text-white mb-2">Node Unreachable</p>
+          <p className="text-xs text-zinc-500 mb-6 leading-relaxed">The requested session has been purged or you lack sufficient clearance.</p>
+          <button onClick={() => navigate(-1)} className="text-[10px] font-bold text-red-400 uppercase tracking-widest border border-red-500/30 px-6 py-2 hover:bg-red-500/10 transition-colors">
+            Return to Dashboard
           </button>
         </div>
       </div>
@@ -415,103 +376,62 @@ export default function SessionView() {
   }
 
   const chatColumn = (
-    <div className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden bg-white border border-slate-200 rounded-xl shadow-sm">
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-4 py-5 space-y-3">
-          {messagesLoading ? (
-            <div className="space-y-3 pt-2">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                  <div
-                    className="h-10 rounded-2xl bg-slate-200 animate-pulse"
-                    style={{ width: `${32 + (i * 11) % 28}%` }}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-2">
-              <p className="text-sm text-slate-400">No messages yet.</p>
-              <p className="text-xs text-slate-400">Send the first message below.</p>
-            </div>
-          ) : (
-            messages.map((message) => (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                isOwn={message.sender_id === user.id}
-              />
-            ))
-          )}
-          <div ref={bottomRef} />
-        </div>
-
-        <ReviewSection
-          session={session}
-          userId={user.id}
-          onReviewSuccess={handleReviewSuccess}
-        />
-      </div>
-
-      <div className={`border-t shrink-0 ${isClosed ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-200'}`}>
-        {isClosed ? (
-          <div className="px-4 py-4 flex items-center justify-center">
-            <p className="text-xs text-slate-400">Session is closed</p>
+    <div className="flex flex-col h-full bg-[#0a0f16] border border-white/[0.04] overflow-hidden relative">
+      <div className="flex-1 overflow-y-auto scrollbar-none p-6 space-y-4">
+        {messagesLoading ? (
+          <div className="space-y-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                <div className="h-12 bg-white/5 animate-pulse" style={{ width: `${40 + (i * 15) % 30}%` }} />
+              </div>
+            ))}
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-3 opacity-50">
+            <p className="text-sm text-zinc-500">Channel opened.</p>
+            <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">Awaiting input...</p>
           </div>
         ) : (
-          <div className="px-4 pt-2 pb-3 space-y-2">
+          messages.map((message) => <MessageBubble key={message.id} message={message} isOwn={message.sender_id === user.id} />)
+        )}
+        <div ref={bottomRef} />
+        <ReviewSection session={session} userId={user.id} onReviewSuccess={handleReviewSuccess} />
+      </div>
+
+      <div className="shrink-0 bg-[#05090f] border-t border-white/[0.04]">
+        {isClosed ? (
+          <div className="p-4 flex items-center justify-center">
+            <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">Connection Terminated</p>
+          </div>
+        ) : (
+          <div className="p-4 space-y-3">
             {typingUser && (
-              <div className="flex items-center gap-1.5 px-1">
-                <span className="flex gap-0.5">
+              <div className="flex items-center gap-2 px-2">
+                <span className="flex gap-1">
                   {[0, 1, 2].map((i) => (
-                    <span
-                      key={i}
-                      className="w-1 h-1 rounded-full bg-slate-400 animate-bounce"
-                      style={{ animationDelay: `${i * 0.15}s` }}
-                    />
+                    <span key={i} className="w-1 h-1 bg-emerald-500/50 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
                   ))}
                 </span>
-                <p className="text-xs text-slate-400">Someone is typing…</p>
+                <p className="text-[9px] font-mono text-emerald-500/50 uppercase tracking-widest">Incoming transmission...</p>
               </div>
             )}
 
             {imagePreview && (
-              <div className="relative inline-block">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="h-16 w-16 rounded-lg object-cover border border-slate-200"
-                />
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-slate-900 transition"
-                  aria-label="Remove image"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
+              <div className="relative inline-block ml-2">
+                <img src={imagePreview} alt="Preview" className="h-16 w-16 object-cover border border-white/10" />
+                <button type="button" onClick={removeImage} className="absolute -top-2 -right-2 w-5 h-5 bg-[#05090f] border border-white/20 text-white flex items-center justify-center hover:bg-white/10 transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
               </div>
             )}
 
-            <form onSubmit={handleSend} className="flex items-end gap-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
+            <form onSubmit={handleSend} className="flex items-end gap-3">
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="shrink-0 p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
-                aria-label="Attach image"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="shrink-0 p-3 text-zinc-500 border border-white/10 bg-white/[0.02] hover:text-white hover:bg-white/5 transition-colors" aria-label="Attach file">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                 </svg>
               </button>
@@ -522,26 +442,12 @@ export default function SessionView() {
                 value={content}
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}
-                placeholder="Write a message… (Enter to send)"
-                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none leading-relaxed"
+                placeholder="Type command..."
+                className="flex-1 bg-white/[0.02] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-emerald-500/50 resize-none leading-relaxed"
               />
 
-              <button
-                type="submit"
-                disabled={(!content.trim() && !imageFile) || isSending}
-                className="shrink-0 rounded-xl bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {isSending ? (
-                  <span className="flex items-center gap-1.5">
-                    <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    Sending
-                  </span>
-                ) : (
-                  'Send'
-                )}
+              <button type="submit" disabled={(!content.trim() && !imageFile) || isSending} className="shrink-0 bg-emerald-500 text-[#05090f] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed">
+                {isSending ? 'Tx...' : 'Send'}
               </button>
             </form>
           </div>
@@ -551,33 +457,31 @@ export default function SessionView() {
   );
 
   return (
-    <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
-      <SessionHeader
-        session={session}
-        onBack={() => navigate(-1)}
-        onClose={() => closeMutation.mutate()}
-        isClosing={closeMutation.isPending}
-        isEditorOpen={isEditorOpen}
-        onToggleEditor={() => setIsEditorOpen((prev) => !prev)}
-      />
+    <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans overflow-hidden">
+      <div className="w-full max-w-[1600px] mx-auto border-x border-white/[0.04] h-full flex flex-col bg-[#05090f]/50 shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+        <SessionHeader
+          session={session}
+          onBack={() => navigate(-1)}
+          onClose={() => closeMutation.mutate()}
+          isClosing={closeMutation.isPending}
+          isEditorOpen={isEditorOpen}
+          onToggleEditor={() => setIsEditorOpen((prev) => !prev)}
+        />
 
-      <div className="flex-1 overflow-hidden p-4">
-        {isEditorOpen ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
-            {chatColumn}
-            <div className="hidden lg:flex flex-col h-[calc(100vh-8rem)]">
-              <CodeEditor
-                sessionId={id}
-                userName={editorUserName}
-                onClose={() => setIsEditorOpen(false)}
-              />
+        <div className="flex-1 p-6 overflow-hidden">
+          {isEditorOpen ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+              {chatColumn}
+              <div className="hidden lg:block h-full">
+                <CodeEditor sessionId={id} userName={editorUserName} onClose={() => setIsEditorOpen(false)} />
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="max-w-2xl mx-auto w-full h-full">
-            {chatColumn}
-          </div>
-        )}
+          ) : (
+            <div className="max-w-3xl mx-auto w-full h-full">
+              {chatColumn}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
