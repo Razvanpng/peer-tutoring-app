@@ -72,7 +72,16 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ session, user, profile, isLoading, signIn, signUp, signOut }}>
-      {children}
+      {isLoading ? (
+        <div className="fixed inset-0 z-[9999] bg-[#05090f] bg-grain flex flex-col items-center justify-center font-sans">
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-8 h-8 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
+            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Initializing Environment...</p>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }
