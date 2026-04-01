@@ -29,13 +29,11 @@ function Navbar() {
 function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center text-left px-6 overflow-hidden">
-      {/* Glow-ul vizual: Scăpăm de centrare, îl mutăm în dreapta-sus */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[900px] rounded-full bg-teal-600/10 blur-[130px] animate-glow-pulse"
       />
       
-      {/* Layout asimetric: Mielești textul în stânga, lași spațiu în dreapta */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 w-full max-w-6xl">
         <div className="lg:col-span-8 flex flex-col gap-6 items-start">
           <div className="inline-flex items-center gap-2.5 border border-white/10 bg-white/[0.03] rounded-full px-5 py-2 text-xs text-zinc-400 backdrop-blur-sm shadow-inner">
@@ -74,7 +72,6 @@ function HeroSection() {
           </div>
         </div>
         
-        {/* Dreapta asimetrică goală pentru "spațiu negativ", vital pentru look uman */}
         <div className="lg:col-span-4" />
       </div>
 
