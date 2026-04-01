@@ -119,7 +119,25 @@ export default function MainLayout() {
 
   return (
     <div className="min-h-screen bg-[#05090f] bg-grain relative font-sans flex flex-col items-center">
-      <div className="w-full max-w-[1600px] border-x border-white/[0.04] min-h-screen flex flex-col relative bg-[#05090f]/50">
+      
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden hidden xl:block">
+        <div className="absolute top-[20%] left-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
+        
+        <div className="absolute inset-y-0 left-[4%] w-px bg-white/[0.02]" />
+        <div className="absolute inset-y-0 left-[6%] w-px bg-white/[0.02]" />
+        <div className="absolute bottom-32 left-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl] rotate-180">
+          NODE.01_ACTIVE
+        </div>
+
+        <div className="absolute inset-y-0 right-[4%] w-px bg-white/[0.02]" />
+        <div className="absolute inset-y-0 right-[6%] w-px bg-white/[0.02]" />
+        <div className="absolute top-32 right-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl]">
+          SYSTEMS NOMINAL
+        </div>
+      </div>
+
+      <div className="w-full max-w-[1600px] border-x border-white/[0.04] min-h-screen flex flex-col relative z-10 bg-[#05090f]/50">
         <header className="sticky top-0 z-40 bg-[#05090f]/90 backdrop-blur-xl border-b border-white/[0.04]">
           <div className="w-full px-6 md:px-12 h-16 flex items-center justify-between gap-6">
             <div className="flex items-center gap-12">

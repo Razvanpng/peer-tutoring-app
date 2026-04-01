@@ -174,7 +174,7 @@ function SessionHeader({ session, onBack, onClose, isClosing, isEditorOpen, onTo
 
   return (
     <header className="bg-[#05090f] border-b border-white/[0.04] shrink-0">
-      <div className="max-w-[1600px] mx-auto border-x border-white/[0.04] px-6 h-16 flex items-center justify-between gap-6">
+      <div className="px-6 h-16 flex items-center justify-between gap-6">
         <div className="flex items-center gap-6 min-w-0">
           <button onClick={onBack} className="text-zinc-500 hover:text-white transition-colors p-2 -ml-2" aria-label="Go back">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
@@ -457,8 +457,25 @@ export default function SessionView() {
   );
 
   return (
-    <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans overflow-hidden">
-      <div className="w-full max-w-[1600px] mx-auto border-x border-white/[0.04] h-full flex flex-col bg-[#05090f]/50 shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+    <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans overflow-hidden relative">
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden hidden xl:block">
+        <div className="absolute top-[20%] left-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
+        
+        <div className="absolute inset-y-0 left-[4%] w-px bg-white/[0.02]" />
+        <div className="absolute inset-y-0 left-[6%] w-px bg-white/[0.02]" />
+        <div className="absolute bottom-32 left-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl] rotate-180">
+          NODE.01_ACTIVE
+        </div>
+
+        <div className="absolute inset-y-0 right-[4%] w-px bg-white/[0.02]" />
+        <div className="absolute inset-y-0 right-[6%] w-px bg-white/[0.02]" />
+        <div className="absolute top-32 right-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl]">
+          SYSTEMS NOMINAL
+        </div>
+      </div>
+
+      <div className="w-full max-w-[1600px] mx-auto border-x border-white/[0.04] h-full flex flex-col bg-[#05090f]/50 relative z-10">
         <SessionHeader
           session={session}
           onBack={() => navigate(-1)}
