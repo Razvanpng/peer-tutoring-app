@@ -39,12 +39,12 @@ function UserAvatar({ profile }) {
   const initial = (profile?.full_name?.[0] || profile?.email?.[0] || '?').toUpperCase();
 
   return (
-    <div className="w-8 h-8 border border-white/10 bg-zinc-900/50 overflow-hidden shrink-0 flex items-center justify-center">
+    <div className="w-8 h-8 rounded-full border border-white/10 bg-zinc-900/50 overflow-hidden shrink-0 flex items-center justify-center">
       {profile?.avatar_url ? (
         <img
           src={profile.avatar_url}
           alt={profile.full_name || 'Avatar'}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300"
         />
       ) : (
         <span className="text-xs font-semibold text-zinc-400 select-none">
@@ -103,7 +103,7 @@ export default function MainLayout() {
             addToast('Your session request was accepted!', 'success');
           }
 
-          if (payload.eventType === 'UPDATE' && payload.new?.status === 'completed') {
+          if (payload.eventType === 'UPDATE' && payload.new?.status === 'closed') {
             addToast('A session has been marked as completed.', 'info');
           }
         }
@@ -124,25 +124,37 @@ export default function MainLayout() {
         <div className="absolute top-[20%] left-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
         
-        <div className="absolute inset-y-0 left-[4%] w-px bg-white/[0.02]" />
-        <div className="absolute inset-y-0 left-[6%] w-px bg-white/[0.02]" />
-        <div className="absolute bottom-32 left-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl] rotate-180">
-          NODE.01_ACTIVE
+        <div className="absolute inset-y-0 left-[3%] w-px bg-white/[0.03]" />
+        <div className="absolute inset-y-0 left-[5%] w-px bg-white/[0.02]" />
+        <div className="absolute top-[20%] left-[3%] -translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute top-[25%] left-[3%] -translate-x-1/2 w-1 h-px bg-white/20" />
+        <div className="absolute top-[30%] left-[3%] -translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute bottom-32 left-[4%] text-[9px] font-mono text-zinc-600 tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180">
+          NODE.01_ACTIVE // SEC.A
+        </div>
+        <div className="absolute top-1/2 left-[3%] -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 opacity-20">
+          {[...Array(15)].map((_, i) => <div key={i} className="w-1 h-px bg-white" />)}
         </div>
 
-        <div className="absolute inset-y-0 right-[4%] w-px bg-white/[0.02]" />
-        <div className="absolute inset-y-0 right-[6%] w-px bg-white/[0.02]" />
-        <div className="absolute top-32 right-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl]">
-          SYSTEMS NOMINAL
+        <div className="absolute inset-y-0 right-[3%] w-px bg-white/[0.03]" />
+        <div className="absolute inset-y-0 right-[5%] w-px bg-white/[0.02]" />
+        <div className="absolute bottom-[20%] right-[3%] translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute bottom-[25%] right-[3%] translate-x-1/2 w-1 h-px bg-white/20" />
+        <div className="absolute bottom-[30%] right-[3%] translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute top-32 right-[4%] text-[9px] font-mono text-zinc-600 tracking-[0.4em] uppercase [writing-mode:vertical-rl]">
+          SYSTEMS NOMINAL // SEC.B
+        </div>
+        <div className="absolute top-1/2 right-[3%] translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 opacity-20">
+          {[...Array(15)].map((_, i) => <div key={i} className="w-1 h-px bg-white" />)}
         </div>
       </div>
 
       <div className="w-full max-w-[1600px] border-x border-white/[0.04] min-h-screen flex flex-col relative z-10 bg-[#05090f]/50">
-        <header className="sticky top-0 z-40 bg-[#05090f]/90 backdrop-blur-xl border-b border-white/[0.04]">
+        <header className="sticky top-0 z-40 bg-[#05090f]/90 backdrop-blur-xl border-b border-white/[0.04] supports-[backdrop-filter]:bg-[#05090f]/60">
           <div className="w-full px-6 md:px-12 h-16 flex items-center justify-between gap-6">
             <div className="flex items-center gap-12">
               <Link to="/" className="shrink-0 flex items-center gap-3 group">
-                <div className="w-2 h-2 bg-emerald-500 group-hover:scale-125 transition-transform" />
+                <div className="w-2 h-2 rounded-full bg-emerald-500 group-hover:scale-125 transition-transform" />
                 <span className="text-sm font-semibold tracking-widest text-zinc-100 uppercase">
                   PeerTutor
                 </span>
@@ -173,7 +185,7 @@ export default function MainLayout() {
           </div>
         </header>
 
-        <main className="w-full px-6 md:px-12 py-10 relative z-10 flex-1">
+        <main className="w-full px-6 md:px-12 py-10 relative z-10 flex-1 flex flex-col">
           <Outlet />
         </main>
       </div>

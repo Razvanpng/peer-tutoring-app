@@ -349,7 +349,7 @@ export default function SessionView() {
 
   if (sessionLoading) {
     return (
-      <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans">
+      <div className="fixed inset-0 z-[100] bg-[#05090f] bg-grain flex flex-col font-sans">
         <div className="bg-[#05090f] border-b border-white/[0.04] h-16 shrink-0" />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-6">
@@ -363,7 +363,7 @@ export default function SessionView() {
 
   if (sessionError || !session) {
     return (
-      <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans items-center justify-center p-6">
+      <div className="fixed inset-0 z-[100] bg-[#05090f] bg-grain flex flex-col font-sans items-center justify-center p-6">
         <div className="border border-red-500/20 bg-red-500/5 p-10 text-center max-w-md w-full">
           <p className="text-sm font-bold text-white mb-2">Node Unreachable</p>
           <p className="text-xs text-zinc-500 mb-6 leading-relaxed">The requested session has been purged or you lack sufficient clearance.</p>
@@ -376,7 +376,7 @@ export default function SessionView() {
   }
 
   const chatColumn = (
-    <div className="flex flex-col h-full bg-[#0a0f16] border border-white/[0.04] overflow-hidden relative">
+    <div className="flex flex-col flex-1 h-full bg-[#0a0f16] border border-white/[0.04] overflow-hidden relative">
       <div className="flex-1 overflow-y-auto scrollbar-none p-6 space-y-4">
         {messagesLoading ? (
           <div className="space-y-4">
@@ -457,25 +457,38 @@ export default function SessionView() {
   );
 
   return (
-    <div className="h-screen bg-[#05090f] bg-grain flex flex-col font-sans overflow-hidden relative">
+    <div className="fixed inset-0 z-[100] bg-[#05090f] bg-grain flex flex-col font-sans overflow-hidden">
+      
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden hidden xl:block">
         <div className="absolute top-[20%] left-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[50%] bg-emerald-500/5 blur-[120px] rounded-full" />
         
-        <div className="absolute inset-y-0 left-[4%] w-px bg-white/[0.02]" />
-        <div className="absolute inset-y-0 left-[6%] w-px bg-white/[0.02]" />
-        <div className="absolute bottom-32 left-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl] rotate-180">
-          NODE.01_ACTIVE
+        <div className="absolute inset-y-0 left-[3%] w-px bg-white/[0.03]" />
+        <div className="absolute inset-y-0 left-[5%] w-px bg-white/[0.02]" />
+        <div className="absolute top-[20%] left-[3%] -translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute top-[25%] left-[3%] -translate-x-1/2 w-1 h-px bg-white/20" />
+        <div className="absolute top-[30%] left-[3%] -translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute bottom-32 left-[4%] text-[9px] font-mono text-zinc-600 tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180">
+          NODE.01_ACTIVE // SEC.A
+        </div>
+        <div className="absolute top-1/2 left-[3%] -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 opacity-20">
+          {[...Array(15)].map((_, i) => <div key={i} className="w-1 h-px bg-white" />)}
         </div>
 
-        <div className="absolute inset-y-0 right-[4%] w-px bg-white/[0.02]" />
-        <div className="absolute inset-y-0 right-[6%] w-px bg-white/[0.02]" />
-        <div className="absolute top-32 right-[5%] text-[9px] font-mono text-zinc-700 tracking-[0.3em] uppercase [writing-mode:vertical-rl]">
-          SYSTEMS NOMINAL
+        <div className="absolute inset-y-0 right-[3%] w-px bg-white/[0.03]" />
+        <div className="absolute inset-y-0 right-[5%] w-px bg-white/[0.02]" />
+        <div className="absolute bottom-[20%] right-[3%] translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute bottom-[25%] right-[3%] translate-x-1/2 w-1 h-px bg-white/20" />
+        <div className="absolute bottom-[30%] right-[3%] translate-x-1/2 w-2 h-px bg-white/20" />
+        <div className="absolute top-32 right-[4%] text-[9px] font-mono text-zinc-600 tracking-[0.4em] uppercase [writing-mode:vertical-rl]">
+          SYSTEMS NOMINAL // SEC.B
+        </div>
+        <div className="absolute top-1/2 right-[3%] translate-x-1/2 -translate-y-1/2 flex flex-col gap-1.5 opacity-20">
+          {[...Array(15)].map((_, i) => <div key={i} className="w-1 h-px bg-white" />)}
         </div>
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto border-x border-white/[0.04] h-full flex flex-col bg-[#05090f]/50 relative z-10">
+      <div className="w-full max-w-[1600px] mx-auto border-x border-white/[0.04] h-full flex flex-col bg-[#05090f]/50 relative z-10 shadow-[0_0_100px_rgba(0,0,0,0.5)]">
         <SessionHeader
           session={session}
           onBack={() => navigate(-1)}
@@ -485,16 +498,16 @@ export default function SessionView() {
           onToggleEditor={() => setIsEditorOpen((prev) => !prev)}
         />
 
-        <div className="flex-1 p-6 overflow-hidden">
+        <div className="flex-1 p-6 overflow-hidden flex flex-col">
           {isEditorOpen ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full flex-1 min-h-0">
               {chatColumn}
-              <div className="hidden lg:block h-full">
+              <div className="hidden lg:flex flex-col h-full min-h-0">
                 <CodeEditor sessionId={id} userName={editorUserName} onClose={() => setIsEditorOpen(false)} />
               </div>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto w-full h-full">
+            <div className="max-w-3xl mx-auto w-full h-full flex-1 min-h-0">
               {chatColumn}
             </div>
           )}
