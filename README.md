@@ -7,7 +7,7 @@ I built PeerTutor because academic collaboration shouldn't feel like a social me
 
 ## Demo & Visuals
 
-- **Live Production:** [vercel_url]
+- **Live Production:** [https://peer-tutoring-app.vercel.app/]
 
 ### Workspace
 Real-time synchronized environment featuring live chat, file attachments, and a collaborative editor that stays in sync without page refreshes.
