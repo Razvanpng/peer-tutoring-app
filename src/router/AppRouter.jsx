@@ -2,7 +2,6 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import MainLayout from '../components/layout/MainLayout';
 
 import LandingPage from '../pages/public/LandingPage';
@@ -15,12 +14,23 @@ import SessionView from '../pages/session/SessionView';
 import ProfileSettings from '../pages/profile/ProfileSettings';
 import NotFoundPage from '../pages/NotFoundPage';
 
+function SystemLoader() {
+  return (
+    <div className="fixed inset-0 z-[9999] bg-[#05090f] bg-grain flex flex-col items-center justify-center font-sans">
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
+        <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Routing Systems...</p>
+      </div>
+    </div>
+  );
+}
+
 function RootRedirect() {
   const { user, profile, isLoading } = useAuth();
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <SystemLoader />;
   if (!user) return <LandingPage />;
-  if (user && !profile) return <LoadingSpinner />;
+  if (user && !profile) return <SystemLoader />;
 
   return (
     <Navigate
