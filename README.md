@@ -39,15 +39,13 @@ Scan the network for verified peers. Filter by subject, check reputation, and in
 1. **Clone the repo:**
    ```bash
    git clone https://github.com/Razvanpng/peer-tutoring-app
-   cd peertutor
 
 2. **Install dependencies:**
     ```bash
     npm install
 
 3. **Configure Environment Variables:**
-    ```bash
-    Create a .env.local file in the root directory:
+    Create a `.env.local` file in the root directory:
 
     VITE_SUPABASE_URL=your_project_url
     VITE_SUPABASE_ANON_KEY=your_anon_key
