@@ -24,181 +24,154 @@ export default function ProfileSettings() {
     if (profile) {
       setFullName(profile.full_name ?? '');
       setBio(profile.bio ?? '');
-      setSubjectsInput(
-        Array.isArray(profile.subjects) ? profile.subjects.join(', ') : ''
-      );
+      setSubjectsInput(Array.isArray(profile.subjects) ? profile.subjects.join(', ') : '');
       setAvatarUrl(profile.avatar_url ?? null);
     }
   }, [profile]);
 
   const uploadMutation = useMutation({
     mutationFn: (file) => profilesApi.uploadAvatar(user.id, file),
-    onSuccess: (url) => {
-      setAvatarUrl(url);
-    },
-    onError: (err) => {
-      setMutationError(err.message ?? 'Failed to upload avatar. Please try again.');
-    },
+    onSuccess: (url) => { setAvatarUrl(url); },
+    onError: (err) => { setMutationError(err.message ?? 'Upload failed.'); },
   });
 
   const updateMutation = useMutation({
     mutationFn: (payload) => profilesApi.updateProfile(user.id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
-      setSuccessMessage('Profile updated successfully.');
+      setSuccessMessage('Parameters updated successfully.');
       setMutationError(null);
       setTimeout(() => setSuccessMessage(null), 4000);
     },
     onError: (err) => {
-      setMutationError(err.message ?? 'Failed to update profile. Please try again.');
+      setMutationError(err.message ?? 'Update execution failed.');
       setSuccessMessage(null);
     },
   });
 
   function handleFileChange(e) {
     const file = e.target.files?.[0];
-    if (file) {
-      uploadMutation.mutate(file);
-    }
+    if (file) uploadMutation.mutate(file);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    const subjects = subjectsInput
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-    updateMutation.mutate({
-      full_name: fullName.trim(),
-      bio: bio.trim(),
-      subjects,
-      avatar_url: avatarUrl,
-    });
+    const subjects = subjectsInput.split(',').map((s) => s.trim()).filter(Boolean);
+    updateMutation.mutate({ full_name: fullName.trim(), bio: bio.trim(), subjects, avatar_url: avatarUrl });
   }
 
   if (isLoading) {
     return (
-      <div className="space-y-4 max-w-xl">
-        <div className="h-6 w-32 rounded-lg bg-slate-100 animate-pulse" />
-        <div className="h-40 rounded-xl bg-slate-100 animate-pulse" />
+      <div className="max-w-2xl animate-pulse space-y-6">
+        <div className="h-8 w-48 bg-white/5" />
+        <div className="h-[400px] border border-white/5 bg-white/[0.01]" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <div>
-        <h1 className="text-lg font-semibold text-slate-800">Profile Settings</h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          Update your name, bio, avatar, and the subjects you work with.
-        </p>
+    <div className="max-w-2xl space-y-8 animate-fade-in">
+      
+      <div className="border-b border-white/5 pb-6">
+        <h1 className="text-3xl font-bold text-white tracking-tighter">Configuration</h1>
+        <p className="text-sm text-zinc-500 mt-2 font-mono">Manage identity and system parameters.</p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-5"
-      >
-        <div className="space-y-3">
-          <label className="block text-sm font-medium text-slate-700">Avatar</label>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full border border-slate-200 bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt="Avatar preview"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-xl font-semibold text-slate-400 uppercase select-none">
-                  {fullName?.[0] || user.email?.[0] || '?'}
-                </span>
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploadMutation.isPending}
-                className="rounded-lg border border-slate-200 px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {uploadMutation.isPending ? 'Uploading…' : 'Upload image'}
-              </button>
-              <p className="text-xs text-slate-400">JPG, PNG or WebP. Max 2MB.</p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        
+        <div className="flex items-start gap-6 pb-8 border-b border-white/5">
+          <div className="w-20 h-20 bg-[#05090f] border border-white/10 shrink-0 flex items-center justify-center relative group">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+            ) : (
+              <span className="text-xl font-mono text-zinc-500">{fullName?.[0] || '?'}</span>
+            )}
+            {uploadMutation.isPending && (
+              <div className="absolute inset-0 bg-[#05090f]/80 flex items-center justify-center backdrop-blur-sm">
+                <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+          </div>
+          <div className="space-y-3 pt-1">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadMutation.isPending}
+              className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] px-4 py-2 transition-colors disabled:opacity-50"
+            >
+              Override Image
+            </button>
+            <p className="text-[10px] font-mono text-zinc-600">Max size 2MB. JPG, PNG.</p>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="fullName" className="block text-sm font-medium text-slate-700">
-            Full Name
-          </label>
-          <input
-            id="fullName"
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="e.g. Alex Johnson"
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-          />
-        </div>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="fullName" className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+              Designation (Full Name)
+            </label>
+            <input
+              id="fullName"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full bg-[#05090f] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-zinc-700 outline-none transition-colors focus:border-emerald-500/50"
+            />
+          </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="bio" className="block text-sm font-medium text-slate-700">
-            Bio
-          </label>
-          <textarea
-            id="bio"
-            rows={4}
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Tell mentees a bit about your background and expertise…"
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none"
-          />
-        </div>
+          <div className="space-y-2">
+            <label htmlFor="bio" className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+              Telemetry (Bio)
+            </label>
+            <textarea
+              id="bio"
+              rows={4}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Describe your expertise..."
+              className="w-full bg-[#05090f] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-zinc-700 outline-none transition-colors focus:border-emerald-500/50 resize-none"
+            />
+          </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="subjects" className="block text-sm font-medium text-slate-700">
-            Subjects
-          </label>
-          <input
-            id="subjects"
-            type="text"
-            value={subjectsInput}
-            onChange={(e) => setSubjectsInput(e.target.value)}
-            placeholder="e.g. Math, Physics, Computer Science"
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-          />
-          <p className="text-xs text-slate-400">Separate subjects with commas.</p>
+          <div className="space-y-2">
+            <label htmlFor="subjects" className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+              Vectors (Subjects)
+            </label>
+            <input
+              id="subjects"
+              type="text"
+              value={subjectsInput}
+              onChange={(e) => setSubjectsInput(e.target.value)}
+              placeholder="e.g. Mathematics, Calculus"
+              className="w-full bg-[#05090f] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-zinc-700 outline-none transition-colors focus:border-emerald-500/50"
+            />
+            <p className="text-[10px] font-mono text-zinc-600">Comma separated variables.</p>
+          </div>
         </div>
 
         {successMessage && (
-          <p className="text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+          <div className="p-3 border border-emerald-500/20 bg-emerald-500/10 text-[10px] font-mono text-emerald-400 uppercase tracking-widest">
             {successMessage}
-          </p>
+          </div>
         )}
 
         {mutationError && (
-          <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          <div className="p-3 border border-red-500/20 bg-red-500/10 text-[10px] font-mono text-red-400 uppercase tracking-widest">
             {mutationError}
-          </p>
+          </div>
         )}
 
-        <div className="flex justify-end pt-1">
+        <div className="pt-6 border-t border-white/5">
           <button
             type="submit"
             disabled={updateMutation.isPending || uploadMutation.isPending}
-            className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-emerald-500 hover:bg-emerald-400 text-[#05090f] px-8 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
           >
-            {updateMutation.isPending ? 'Saving…' : 'Save changes'}
+            {updateMutation.isPending ? 'Executing...' : 'Commit Changes'}
           </button>
         </div>
+
       </form>
     </div>
   );

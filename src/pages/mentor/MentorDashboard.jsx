@@ -3,25 +3,60 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { sessionsApi } from '../../services/api';
 
-function StarIcon({ filled }) {
+function StatCard({ label, value, sub }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className={`w-3.5 h-3.5 ${filled ? 'text-amber-400' : 'text-slate-200'}`}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-    >
-      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-    </svg>
+    <div className="flex flex-col gap-2 p-6 border border-white/5 bg-white/[0.01]">
+      <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">{label}</span>
+      <div className="flex items-end gap-3">
+        <span className="text-3xl font-bold text-white tracking-tighter leading-none">{value}</span>
+        {sub && <span className="text-[10px] text-zinc-600 font-mono mb-1">{sub}</span>}
+      </div>
+    </div>
   );
 }
 
-function StatCard({ label, value, sub }) {
+function StatusBadge({ status }) {
+  const styles = {
+    pending:  'text-amber-400 border-amber-400/20 bg-amber-400/5',
+    accepted: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/5',
+    completed: 'text-zinc-400 border-white/5 bg-white/[0.02]',
+  };
+  const currentStyle = styles[status] || styles.completed;
+
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-1">
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="text-2xl font-semibold text-slate-800 tracking-tight">{value}</p>
-      {sub && <p className="text-xs text-slate-400">{sub}</p>}
+    <span className={`px-2 py-1 text-[9px] font-mono uppercase tracking-widest border ${currentStyle}`}>
+      {status}
+    </span>
+  );
+}
+
+function PendingSessionCard({ session, onAccept, isAccepting }) {
+  return (
+    <div className="flex flex-col justify-between p-5 border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-colors min-h-[140px]">
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <StatusBadge status="pending" />
+          <span className="text-[9px] font-mono text-zinc-600">
+            {new Date(session.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })}
+          </span>
+        </div>
+        <div>
+          <p className="text-base font-semibold text-zinc-200 tracking-tight line-clamp-1">{session.topic}</p>
+          {session.description && (
+            <p className="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">{session.description}</p>
+          )}
+        </div>
+      </div>
+      
+      <div className="pt-5 mt-auto border-t border-white/5">
+        <button
+          onClick={() => onAccept(session.id)}
+          disabled={isAccepting}
+          className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-[#05090f] text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
+        >
+          {isAccepting ? 'Processing...' : 'Accept Connection'}
+        </button>
+      </div>
     </div>
   );
 }
@@ -29,63 +64,23 @@ function StatCard({ label, value, sub }) {
 function ActiveSessionCard({ session }) {
   const navigate = useNavigate();
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-800 truncate">{session.topic}</p>
-          {session.description && (
-            <p className="mt-1 text-xs text-slate-500 leading-relaxed line-clamp-2">
-              {session.description}
-            </p>
-          )}
-        </div>
-        <span className="shrink-0 text-xs font-medium border rounded-full px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border-emerald-200">
-          Accepted
-        </span>
-      </div>
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-slate-400">
-          {new Date(session.created_at).toLocaleDateString('en-US', {
-            month: 'short', day: 'numeric', year: 'numeric',
-          })}
-        </p>
-        <button
-          onClick={() => navigate(`/session/${session.id}`)}
-          className="text-xs font-medium text-slate-600 border border-slate-200 rounded-lg px-3 py-1.5 hover:bg-slate-50 hover:border-slate-300 transition"
-        >
-          Open Session
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function PendingSessionCard({ session, onAccept, isAccepting }) {
-  return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
-      <div className="space-y-1">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-800 truncate">{session.topic}</p>
-          <span className="shrink-0 text-xs font-medium border rounded-full px-2.5 py-0.5 bg-amber-50 text-amber-700 border-amber-200">
-            Pending
+    <div className="flex flex-col justify-between p-5 border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-colors min-h-[140px]">
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <StatusBadge status="accepted" />
+          <span className="text-[9px] font-mono text-zinc-600">
+            {new Date(session.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })}
           </span>
         </div>
-        {session.description && (
-          <p className="text-xs text-slate-500 leading-relaxed">{session.description}</p>
-        )}
+        <p className="text-base font-semibold text-zinc-200 tracking-tight line-clamp-1">{session.topic}</p>
       </div>
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-slate-400">
-          {new Date(session.created_at).toLocaleDateString('en-US', {
-            month: 'short', day: 'numeric', year: 'numeric',
-          })}
-        </p>
+      
+      <div className="pt-5 mt-auto border-t border-white/5">
         <button
-          onClick={() => onAccept(session.id)}
-          disabled={isAccepting}
-          className="rounded-lg bg-slate-800 px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => navigate(`/session/${session.id}`)}
+          className="w-full py-2 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 text-[10px] font-bold uppercase tracking-widest transition-colors"
         >
-          {isAccepting ? 'Accepting…' : 'Accept'}
+          Open Interface
         </button>
       </div>
     </div>
@@ -95,63 +90,42 @@ function PendingSessionCard({ session, onAccept, isAccepting }) {
 function CompletedSessionCard({ session }) {
   const ratedStars = session.rating ?? 0;
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-800 truncate">{session.topic}</p>
-          <p className="mt-0.5 text-xs text-slate-400">
-            {new Date(session.created_at).toLocaleDateString('en-US', {
-              month: 'short', day: 'numeric', year: 'numeric',
-            })}
-          </p>
+    <div className="flex flex-col p-5 border border-white/5 bg-transparent opacity-70 hover:opacity-100 transition-opacity">
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <p className="text-sm font-semibold text-zinc-300 truncate">{session.topic}</p>
+          <span className="text-[9px] font-mono text-zinc-600 mt-1 block">
+            {new Date(session.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </span>
         </div>
-        <span className="shrink-0 text-xs font-medium border rounded-full px-2.5 py-0.5 bg-slate-100 text-slate-500 border-slate-200">
-          Completed
-        </span>
+        <StatusBadge status="completed" />
       </div>
 
-      {session.rating != null ? (
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <StarIcon key={star} filled={star <= ratedStars} />
-            ))}
-            <span className="ml-1 text-xs text-slate-500">{session.rating} / 5</span>
+      <div className="mt-auto pt-4 border-t border-white/5">
+        {session.rating != null ? (
+          <div className="space-y-2">
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <div key={star} className={`w-1.5 h-1.5 ${star <= ratedStars ? 'bg-emerald-400' : 'bg-white/10'}`} />
+              ))}
+            </div>
+            {session.review && <p className="text-[10px] font-mono text-zinc-500 line-clamp-2">"{session.review}"</p>}
           </div>
-          {session.review && (
-            <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
-              {session.review}
-            </p>
-          )}
-        </div>
-      ) : (
-        <p className="text-xs text-slate-400 italic">No review submitted.</p>
-      )}
+        ) : (
+          <p className="text-[10px] font-mono text-zinc-600">No telemetry logged.</p>
+        )}
+      </div>
     </div>
   );
 }
 
-function SectionBlock({ title, subtitle, isLoading, isEmpty, emptyText, skeletonCount = 3, children }) {
+function SectionSkeleton({ count = 3 }) {
   return (
-    <section className="space-y-4">
-      <div>
-        <h2 className="text-base font-semibold text-slate-800">{title}</h2>
-        {subtitle && <p className="text-sm text-slate-500 mt-0.5">{subtitle}</p>}
-      </div>
-      {isLoading ? (
-        <div className="space-y-3">
-          {[...Array(skeletonCount)].map((_, i) => (
-            <div key={i} className="h-28 rounded-xl bg-slate-100 animate-pulse" />
-          ))}
-        </div>
-      ) : isEmpty ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
-          <p className="text-sm text-slate-400">{emptyText}</p>
-        </div>
-      ) : (
-        <div className="space-y-3">{children}</div>
-      )}
-    </section>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[...Array(count)].map((_, i) => (
+        <div key={i} className="h-36 border border-white/5 bg-white/[0.01] animate-pulse" />
+      ))}
+    </div>
   );
 }
 
@@ -171,13 +145,11 @@ export default function MentorDashboard() {
 
   const activeSessions = allMentorSessions.filter((s) => s.status === 'accepted');
   const pastSessions = allMentorSessions.filter((s) => s.status === 'completed');
-
   const ratedSessions = pastSessions.filter((s) => s.rating != null);
-  const totalReviews = ratedSessions.length;
-  const averageRating =
-    totalReviews > 0
-      ? (ratedSessions.reduce((sum, s) => sum + s.rating, 0) / totalReviews).toFixed(1)
-      : null;
+  
+  const averageRating = ratedSessions.length > 0 
+    ? (ratedSessions.reduce((sum, s) => sum + s.rating, 0) / ratedSessions.length).toFixed(1) 
+    : '--';
 
   const acceptMutation = useMutation({
     mutationFn: (sessionId) => sessionsApi.acceptSession(sessionId, user.id),
@@ -188,99 +160,103 @@ export default function MentorDashboard() {
   });
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-16 animate-fade-in">
+      
+      <section>
+        <div className="flex items-end justify-between mb-6 pb-4 border-b border-white/5">
+          <h2 className="text-3xl font-bold text-white tracking-tighter">Command Center</h2>
+        </div>
 
-      <section className="space-y-4">
-        <h2 className="text-base font-semibold text-slate-800">Stats Overview</h2>
         {mentorSessionsLoading ? (
-          <div className="grid grid-cols-3 gap-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-24 rounded-xl bg-slate-100 animate-pulse" />
-            ))}
+          <div className="grid grid-cols-3 gap-px bg-white/5 border border-white/5">
+            <div className="h-24 bg-[#05090f] animate-pulse" />
+            <div className="h-24 bg-[#05090f] animate-pulse" />
+            <div className="h-24 bg-[#05090f] animate-pulse" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <StatCard
-              label="Sessions Completed"
-              value={pastSessions.length}
-            />
-            <StatCard
-              label="Average Rating"
-              value={
-                averageRating != null ? (
-                  <span className="flex items-center gap-1.5">
-                    {averageRating}
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
-                  </span>
-                ) : '—'
-              }
-              sub={averageRating != null ? 'out of 5' : 'No ratings yet'}
-            />
-            <StatCard
-              label="Total Reviews"
-              value={totalReviews}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
+            <div className="bg-[#05090f]">
+              <StatCard label="Clearances" value={pastSessions.length} />
+            </div>
+            <div className="bg-[#05090f]">
+              <StatCard label="System Rating" value={averageRating} sub={averageRating !== '--' ? '/ 5.0' : ''} />
+            </div>
+            <div className="bg-[#05090f]">
+              <StatCard label="Logged Reviews" value={ratedSessions.length} />
+            </div>
           </div>
         )}
       </section>
 
-      <div className="border-t border-slate-200" />
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-sm font-semibold text-zinc-100 uppercase tracking-widest">Incoming Requests</h2>
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-[10px] text-amber-500 font-mono tracking-widest">{pendingSessions.length} Pending</span>
+          </div>
+        </div>
 
-      <SectionBlock
-        title="Active Sessions"
-        subtitle="Sessions you have accepted and are currently running."
-        isLoading={mentorSessionsLoading}
-        isEmpty={activeSessions.length === 0}
-        emptyText="No active sessions yet."
-        skeletonCount={2}
-      >
-        {activeSessions.map((session) => (
-          <ActiveSessionCard key={session.id} session={session} />
-        ))}
-      </SectionBlock>
+        {acceptMutation.isError && (
+          <div className="mb-4 p-3 border border-red-500/20 bg-red-500/10 text-[10px] font-mono text-red-400 uppercase">
+            Error: {acceptMutation.error?.message ?? 'Execution failed.'}
+          </div>
+        )}
+        
+        {pendingLoading ? <SectionSkeleton /> : pendingSessions.length === 0 ? (
+          <div className="p-10 border border-white/5 border-dashed flex justify-center text-center">
+            <p className="text-sm text-zinc-600 font-mono">No incoming signals.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {pendingSessions.map((session) => (
+              <PendingSessionCard
+                key={session.id}
+                session={session}
+                onAccept={(id) => acceptMutation.mutate(id)}
+                isAccepting={acceptMutation.isPending && acceptMutation.variables === session.id}
+              />
+            ))}
+          </div>
+        )}
+      </section>
 
-      <div className="border-t border-slate-200" />
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-sm font-semibold text-zinc-100 uppercase tracking-widest">Active Channels</h2>
+          <span className="text-[10px] text-emerald-500 font-mono tracking-widest">{activeSessions.length} Open</span>
+        </div>
+        
+        {mentorSessionsLoading ? <SectionSkeleton count={2} /> : activeSessions.length === 0 ? (
+          <div className="p-10 border border-white/5 border-dashed flex justify-center text-center">
+            <p className="text-sm text-zinc-600 font-mono">Zero active links.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {activeSessions.map((session) => (
+              <ActiveSessionCard key={session.id} session={session} />
+            ))}
+          </div>
+        )}
+      </section>
 
-      <SectionBlock
-        title="Pending Requests"
-        subtitle="Open requests from mentees waiting for a mentor."
-        isLoading={pendingLoading}
-        isEmpty={pendingSessions.length === 0}
-        emptyText="No open requests at the moment."
-        skeletonCount={3}
-      >
-        {pendingSessions.map((session) => (
-          <PendingSessionCard
-            key={session.id}
-            session={session}
-            onAccept={(id) => acceptMutation.mutate(id)}
-            isAccepting={acceptMutation.isPending && acceptMutation.variables === session.id}
-          />
-        ))}
-      </SectionBlock>
-
-      {acceptMutation.isError && (
-        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-          {acceptMutation.error?.message ?? 'Failed to accept session. Please try again.'}
-        </p>
-      )}
-
-      <div className="border-t border-slate-200" />
-
-      <SectionBlock
-        title="Session History"
-        subtitle="All sessions you have completed with mentees."
-        isLoading={mentorSessionsLoading}
-        isEmpty={pastSessions.length === 0}
-        emptyText="No completed sessions yet."
-        skeletonCount={2}
-      >
-        {pastSessions.map((session) => (
-          <CompletedSessionCard key={session.id} session={session} />
-        ))}
-      </SectionBlock>
+      <section>
+        <div className="flex items-center mb-6 pb-4 border-b border-white/5">
+          <h2 className="text-sm font-semibold text-zinc-100 uppercase tracking-widest">System Log</h2>
+        </div>
+        
+        {mentorSessionsLoading ? <SectionSkeleton count={3} /> : pastSessions.length === 0 ? (
+          <div className="p-10 border border-white/5 border-dashed flex justify-center text-center">
+            <p className="text-sm text-zinc-600 font-mono">History cache empty.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {pastSessions.map((session) => (
+              <CompletedSessionCard key={session.id} session={session} />
+            ))}
+          </div>
+        )}
+      </section>
 
     </div>
   );
