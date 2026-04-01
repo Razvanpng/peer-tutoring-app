@@ -1,16 +1,54 @@
-# React + Vite
+# PeerTutor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimalist, high-performance workspace designed for students who need to cut through the noise. No social feeds, no distractions—just a direct link between learners and mentors in a focused, technical environment.
 
-Currently, two official plugins are available:
+## The Concept
+I built PeerTutor because academic collaboration shouldn't feel like a social media platform. The UI follows an Editorial Brutalist aesthetic: deep blacks, subtle grids, and monochrome technical accents. It is designed to look and feel like a professional tool, prioritizing function and clarity over visual fluff.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Demo & Visuals
 
-## React Compiler
+- **Live Production:** [vercel_url]
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Workspace
+Real-time synchronized environment featuring live chat, file attachments, and a collaborative editor that stays in sync without page refreshes.
 
-## Expanding the ESLint configuration
+[Screenshot 1]
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Directory
+Scan the network for verified peers. Filter by subject, check reputation, and initialize a connection instantly.
+
+[Screenshot 2]
+
+- **Video Walkthrough:** [YouTube]
+
+## Tech Stack
+
+- **Frontend:** React (Vite) + Tailwind CSS for the custom architectural layout.
+- **State & Data:** TanStack Query for smart caching and server-state synchronization.
+- **BaaS (Backend):** Supabase (PostgreSQL, Row Level Security, and WebSockets for real-time comms).
+- **Shared Editor:** Integrated Monaco Editor for a professional-grade writing and coding experience.
+
+## Database Architecture
+
+- `profiles`: Handles user designations (mentor/mentee), bios, and expertise vectors.
+- `sessions`: Manages the lifecycle of a connection (pending, accepted, completed) and stores telemetry/ratings.
+- `messages`: Stores the chat history linked to session IDs.
+
+## Local Environment Setup
+
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/Razvanpng/peer-tutoring-app
+   cd peertutor
+
+2. **Install dependencies:**
+    npm install
+
+3. **Configure Environment Variables:**
+    Create a .env.local file in the root directory:
+
+    VITE_SUPABASE_URL=your_project_url
+    VITE_SUPABASE_ANON_KEY=your_anon_key
+
+4. **Start:**
+    npm run dev
