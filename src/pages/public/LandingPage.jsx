@@ -136,7 +136,7 @@ export default function LandingPage() {
                     <span className="w-2.5 h-2.5 bg-white/10" />
                     <span className="w-2.5 h-2.5 bg-white/10" />
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-l border-white/5 pl-4 py-1">Workspace / Advanced Physics</span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-l border-white/5 pl-4 py-1">Workspace / Basic Geometry</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
@@ -153,14 +153,14 @@ export default function LandingPage() {
                   <div className="flex gap-3 w-full opacity-80">
                     <div className="w-6 h-6 bg-white/10 shrink-0" />
                     <div className="bg-white/[0.02] border border-white/10 p-3 text-xs text-zinc-400 rounded-br-none rounded-bl-sm flex-1">
-                      Does mass actually turn into energy in E=mc²?
+                      How do I calculate the length of the longest side again?
                     </div>
                   </div>
                   
                   <div className="flex gap-3 w-full flex-row-reverse">
                     <div className="w-6 h-6 bg-emerald-500/20 shrink-0" />
                     <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-100 rounded-bl-none rounded-br-sm flex-1">
-                      Exactly. Let me write out the full relativistic momentum equation on the right.
+                      That's the hypotenuse! We just use the Pythagorean theorem. I'll write it out.
                     </div>
                   </div>
                   
@@ -172,23 +172,23 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex-1 p-8 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] relative">
-                  <h3 className="text-lg font-bold text-zinc-200 tracking-tight mb-6">Special Relativity</h3>
+                  <h3 className="text-lg font-bold text-zinc-200 tracking-tight mb-6">The Pythagorean Theorem</h3>
                   
                   <div className="space-y-4 font-mono text-sm">
                     <div className="text-zinc-500">
-                      <span className="text-emerald-400 mr-2">#</span> Mass-Energy Equivalence
+                      <span className="text-emerald-400 mr-2">#</span> The Core Formula
                     </div>
                     <div className="text-zinc-300 pl-4 py-2 border-l-2 border-white/10">
-                      E = mc²
+                      a² + b² = c²
                     </div>
                     
                     <div className="text-zinc-500 mt-6">
-                      <span className="text-emerald-400 mr-2">#</span> Total Energy (incl. Momentum)
+                      <span className="text-emerald-400 mr-2">#</span> Finding the Hypotenuse (c)
                     </div>
                     <div className="text-zinc-300 pl-4 py-2 border-l-2 border-emerald-500/50 flex items-center relative">
-                      E² = (pc)² + (m₀c²)²
+                      c = √(a² + b²)
                       <span className="w-2 h-4 bg-emerald-500 animate-pulse ml-2" />
-                      <div className="absolute -top-4 left-40 px-1.5 py-0.5 bg-emerald-500 text-[#05090f] text-[8px] font-bold uppercase tracking-widest shadow-lg">
+                      <div className="absolute -top-4 left-36 px-1.5 py-0.5 bg-emerald-500 text-[#05090f] text-[8px] font-bold uppercase tracking-widest shadow-lg">
                         Tutor
                       </div>
                     </div>
