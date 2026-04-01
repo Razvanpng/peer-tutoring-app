@@ -128,43 +128,77 @@ export default function LandingPage() {
           
           <div className="hidden lg:flex w-[45%] xl:w-[50%] h-full relative items-center justify-center p-12 bg-[#060910] overflow-hidden opacity-0 animate-fade-in" style={{ animationDelay: '0.3s' }}>
             
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-white/[0.02] flex items-center justify-center">
-              <div className="w-[400px] h-[400px] rounded-full border border-white/[0.04] flex items-center justify-center animate-pulse-slow">
-                <div className="w-[200px] h-[200px] rounded-full bg-emerald-500/5 blur-[80px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#0a0f16] border border-white/[0.04] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col z-20">
+              
+              <div className="h-12 bg-[#05090f] border-b border-white/[0.04] flex items-center justify-between px-4 shrink-0">
+                <div className="flex items-center gap-4">
+                  <div className="flex gap-1.5 pl-1">
+                    <span className="w-2.5 h-2.5 bg-white/10" />
+                    <span className="w-2.5 h-2.5 bg-white/10" />
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-l border-white/5 pl-4 py-1">Workspace / Physics 101</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                    <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">Live Sync</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 flex overflow-hidden">
+                <div className="w-1/3 bg-[#05090f]/50 border-r border-white/[0.04] p-4 flex flex-col gap-4 justify-end pb-6 relative">
+                  <div className="absolute top-4 left-4 text-[9px] font-mono text-zinc-600 uppercase tracking-widest">Comms Channel</div>
+                  
+                  <div className="flex gap-3 w-full opacity-80">
+                    <div className="w-6 h-6 bg-white/10 shrink-0" />
+                    <div className="bg-white/[0.02] border border-white/10 p-3 text-xs text-zinc-400 rounded-br-none rounded-bl-sm flex-1">
+                      Can we go over the derivation for thermodynamics?
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3 w-full flex-row-reverse">
+                    <div className="w-6 h-6 bg-emerald-500/20 shrink-0" />
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-100 rounded-bl-none rounded-br-sm flex-1">
+                      Sure, check the whiteboard on the right. I'll write it out step by step.
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5 mt-2 ml-9">
+                    <span className="w-1 h-1 bg-emerald-500/50 animate-bounce" style={{ animationDelay: '0s' }} />
+                    <span className="w-1 h-1 bg-emerald-500/50 animate-bounce" style={{ animationDelay: '0.15s' }} />
+                    <span className="w-1 h-1 bg-emerald-500/50 animate-bounce" style={{ animationDelay: '0.3s' }} />
+                  </div>
+                </div>
+
+                <div className="flex-1 p-8 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] relative">
+                  <h3 className="text-lg font-bold text-zinc-200 tracking-tight mb-6">Laws of Thermodynamics</h3>
+                  
+                  <div className="space-y-4 font-mono text-sm">
+                    <div className="text-zinc-500">
+                      <span className="text-emerald-400 mr-2">#</span> 1st Law: Conservation of Energy
+                    </div>
+                    <div className="text-zinc-300 pl-4 py-2 border-l-2 border-white/10">
+                      ΔU = Q - W
+                    </div>
+                    
+                    <div className="text-zinc-500 mt-6">
+                      <span className="text-emerald-400 mr-2">#</span> 2nd Law: Entropy
+                    </div>
+                    <div className="text-zinc-300 pl-4 py-2 border-l-2 border-emerald-500/50 flex items-center relative">
+                      ΔS = ∫(dQ/T)
+                      <span className="w-2 h-4 bg-emerald-500 animate-pulse ml-2" />
+                      <div className="absolute -top-4 left-24 px-1.5 py-0.5 bg-emerald-500 text-[#05090f] text-[8px] font-bold uppercase tracking-widest shadow-lg">
+                        Tutor
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <svg className="absolute inset-0 w-full h-full opacity-40 pointer-events-none" viewBox="0 0 800 800">
-              <path d="M 200 300 L 400 400 L 550 250" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4" />
-              <path d="M 400 400 L 450 600 L 250 650" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4" />
-              <path d="M 550 250 L 650 450 L 450 600" fill="none" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
-            </svg>
-
-            <div className="absolute top-[35%] left-[20%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-white/10 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm animate-float-slow shadow-2xl">
-              <div className="w-10 h-10 rounded-full bg-zinc-800" />
-            </div>
-            
-            <div className="absolute top-[25%] right-[25%] -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 animate-float-delayed">
-              <div className="px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-[10px] font-bold text-emerald-400 uppercase tracking-widest backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-                Live Session
-              </div>
-              <div className="w-20 h-20 rounded-full border border-emerald-500/30 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm shadow-2xl">
-                <div className="w-16 h-16 rounded-full bg-zinc-800" />
-              </div>
-            </div>
-
-            <div className="absolute bottom-[20%] left-[35%] -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/10 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm animate-float-slow shadow-2xl" style={{ animationDelay: '-3s' }}>
-              <div className="w-8 h-8 rounded-full bg-zinc-800" />
-            </div>
-
-            <div className="absolute bottom-[35%] right-[20%] -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-white/10 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm animate-float-delayed shadow-2xl" style={{ animationDelay: '-2s' }}>
-              <div className="w-12 h-12 rounded-full bg-zinc-800" />
-            </div>
-
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border border-emerald-500/20 bg-[#05090f] flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.15)] z-10">
-              <div className="w-2.5 h-2.5 bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
-            </div>
-
+            <div className="absolute top-[20%] right-[10%] w-32 h-32 bg-emerald-500/5 blur-[60px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[20%] left-[10%] w-40 h-40 bg-emerald-500/5 blur-[80px] rounded-full pointer-events-none" />
           </div>
         </main>
 
