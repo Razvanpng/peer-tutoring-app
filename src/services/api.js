@@ -72,10 +72,27 @@ export const sessionsApi = {
     return data;
   },
 
-  sendMessage: async (sessionId, senderId, content) => {
+  uploadChatImage: async (sessionId, file) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${sessionId}/${Date.now()}-${Math.random()}.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from('chat-images')
+      .upload(fileName, file);
+
+    if (error) throw new Error(error.message);
+
+    const { data } = supabase.storage
+      .from('chat-images')
+      .getPublicUrl(fileName);
+
+    return data.publicUrl;
+  },
+
+  sendMessage: async (sessionId, senderId, content, imageUrl = null) => {
     const { data, error } = await supabase
       .from('messages')
-      .insert([{ session_id: sessionId, sender_id: senderId, content }])
+      .insert([{ session_id: sessionId, sender_id: senderId, content, image_url: imageUrl }])
       .select()
       .single();
     if (error) throw new Error(error.message);
