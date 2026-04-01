@@ -21,15 +21,15 @@ function NavLink({ to, label, active }) {
   return (
     <Link
       to={to}
-      className={`relative px-4 py-2 text-xs uppercase tracking-[0.1em] transition-all duration-300 ${
+      className={`relative px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${
         active
-          ? 'text-white'
-          : 'text-zinc-500 hover:text-zinc-300'
+          ? 'text-zinc-50'
+          : 'text-zinc-500 hover:text-zinc-200'
       }`}
     >
       {label}
       {active && (
-        <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-emerald-400" />
+        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-400" />
       )}
     </Link>
   );
@@ -39,15 +39,15 @@ function UserAvatar({ profile }) {
   const initial = (profile?.full_name?.[0] || profile?.email?.[0] || '?').toUpperCase();
 
   return (
-    <div className="w-9 h-9 border border-white/5 bg-zinc-900 overflow-hidden shrink-0 flex items-center justify-center">
+    <div className="w-8 h-8 rounded-full border border-white/10 bg-zinc-900/50 overflow-hidden shrink-0 flex items-center justify-center">
       {profile?.avatar_url ? (
         <img
           src={profile.avatar_url}
           alt={profile.full_name || 'Avatar'}
-          className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+          className="w-full h-full object-cover"
         />
       ) : (
-        <span className="text-xs font-semibold text-zinc-500 select-none">
+        <span className="text-xs font-semibold text-zinc-400 select-none">
           {initial}
         </span>
       )}
@@ -118,18 +118,18 @@ export default function MainLayout() {
   const links = authProfile?.role === 'mentor' ? MENTOR_LINKS : MENTEE_LINKS;
 
   return (
-    <div className="min-h-screen bg-[#05090f] bg-grain relative font-sans">
-      <header className="sticky top-0 z-40 bg-[#05090f]/95 border-b border-white/[0.04]">
-        <div className="w-full px-6 md:px-12 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-16">
-            <Link to="/" className="shrink-0 flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-500" />
-              <span className="text-sm font-bold tracking-widest text-white uppercase">
+    <div className="min-h-screen bg-[#05090f] bg-grain relative">
+      <header className="sticky top-0 z-40 bg-[#05090f]/90 backdrop-blur-xl border-b border-white/[0.04] supports-[backdrop-filter]:bg-[#05090f]/60">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
+          <div className="flex items-center gap-12">
+            <Link to="/" className="shrink-0 flex items-center gap-2.5 group">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-semibold tracking-tight text-zinc-100 uppercase">
                 PeerTutor
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-4">
+            <nav className="flex items-center gap-6">
               {links.map(({ label, to }) => (
                 <NavLink
                   key={to}
@@ -141,19 +141,20 @@ export default function MainLayout() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-8 shrink-0">
+          <div className="flex items-center gap-5 shrink-0">
             <button
               onClick={signOut}
-              className="text-xs font-medium text-zinc-500 hover:text-white uppercase tracking-widest transition-colors duration-200"
+              className="text-xs font-medium text-zinc-500 hover:text-zinc-300 transition-colors duration-200 uppercase"
             >
               Sign out
             </button>
+            <div className="w-px h-4 bg-white/10" />
             <UserAvatar profile={fullProfile ?? { email: user?.email, ...authProfile }} />
           </div>
         </div>
       </header>
 
-      <main className="w-full px-6 md:px-12 py-12 relative z-10">
+      <main className="max-w-6xl mx-auto px-6 py-10 relative z-10">
         <Outlet />
       </main>
     </div>

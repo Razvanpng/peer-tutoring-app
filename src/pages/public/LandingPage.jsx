@@ -32,26 +32,26 @@ function Navbar() {
 function HeroSection() {
   return (
     <section className="relative min-h-[95vh] flex flex-col justify-center px-6 md:px-12 pt-20 overflow-hidden border-b border-white/[0.04]">
-      <div className="absolute inset-0 bg-subtle-grid opacity-40 mask-image-b" style={{ maskImage: 'linear-gradient(to right, black 60%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 60%, transparent 100%)' }} />
+      <div className="absolute inset-0 bg-subtle-grid opacity-40 mask-image-b" style={{ maskImage: 'linear-gradient(to right, black 50%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 50%, transparent 100%)' }} />
       
-      <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center h-full">
-        <div className="lg:col-span-8 flex flex-col gap-10 items-start opacity-0 animate-reveal-up border-l border-white/10 pl-8 lg:pl-16 py-8">
+      <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center h-full max-w-[1800px] mx-auto">
+        <div className="lg:col-span-6 flex flex-col gap-10 items-start opacity-0 animate-reveal-up py-8 z-20">
           
           <div className="flex items-center gap-4 text-xs font-medium text-zinc-500 tracking-[0.2em] uppercase">
             <span className="w-8 h-px bg-emerald-500/50" />
             Platform Beta Active
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-[6rem] font-semibold text-white tracking-tighter leading-[0.95] text-shadow-sm">
+          <h1 className="text-6xl sm:text-7xl lg:text-[7.5rem] font-semibold text-white tracking-tighter leading-[0.9] text-shadow-sm">
             Clarity <br />
             <span className="text-zinc-600">one-to-one.</span>
           </h1>
 
-          <p className="text-lg text-zinc-400 leading-relaxed max-w-xl">
+          <p className="text-xl text-zinc-400 leading-relaxed max-w-xl">
             A minimalist workspace connecting learners with peers. Cut through the noise, share your screen, and resolve academic blockers in real-time.
           </p>
 
-          <div className="flex flex-wrap items-center gap-6 mt-6">
+          <div className="flex flex-wrap items-center gap-6 mt-4">
             <Link
               to="/register"
               className="group relative flex items-center justify-between w-48 bg-emerald-500 text-[#05090f] text-sm font-bold px-6 py-4 transition-all duration-300 hover:pr-4"
@@ -68,35 +68,60 @@ function HeroSection() {
               Log in instead
             </Link>
           </div>
-        </div>
-        
-        <div className="hidden lg:flex lg:col-span-4 relative h-full flex-col justify-end pb-20 opacity-0 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <div className="w-full aspect-[3/4] border border-white/5 bg-[#0a0f16] p-8 relative overflow-hidden animate-float-slow">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/50 to-transparent" />
-            <div className="flex justify-between items-start mb-12">
-              <div className="w-2 h-2 bg-zinc-700" />
-              <span className="text-[10px] text-zinc-600 tracking-widest uppercase">Session.Active</span>
+
+          <div className="flex items-center gap-8 mt-12 pt-8 border-t border-white/[0.04] w-full max-w-lg">
+            <div className="flex flex-col gap-1">
+              <span className="text-2xl font-medium text-white tracking-tight">100+</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Active Mentors</span>
             </div>
-            
-            <div className="space-y-6">
-              <div className="h-px w-full bg-white/5" />
-              <div className="flex gap-4 items-start">
-                <div className="w-6 h-6 bg-white/10 shrink-0" />
-                <div className="space-y-2 w-full">
-                  <div className="h-2 bg-white/10 w-1/3" />
-                  <div className="h-2 bg-white/5 w-3/4" />
-                </div>
-              </div>
-              <div className="h-px w-full bg-white/5" />
-              <div className="flex gap-4 items-start flex-row-reverse">
-                <div className="w-6 h-6 bg-emerald-500/20 shrink-0" />
-                <div className="space-y-2 w-full flex flex-col items-end">
-                  <div className="h-2 bg-emerald-500/20 w-1/4" />
-                  <div className="h-2 bg-white/5 w-1/2" />
-                </div>
-              </div>
+            <div className="w-px h-8 bg-white/[0.04]" />
+            <div className="flex flex-col gap-1">
+              <span className="text-2xl font-medium text-white tracking-tight">{'<'} 5m</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Avg. Match Time</span>
             </div>
           </div>
+
+        </div>
+        
+        <div className="hidden lg:flex lg:col-span-6 relative h-[800px] w-full flex-col items-center justify-center opacity-0 animate-fade-in z-10" style={{ animationDelay: '0.4s' }}>
+          
+          <div className="absolute w-[600px] h-[600px] border border-white/[0.02] rounded-full flex items-center justify-center">
+            <div className="w-[400px] h-[400px] border border-white/[0.04] rounded-full flex items-center justify-center animate-pulse-slow">
+              <div className="w-[200px] h-[200px] border border-white/[0.06] rounded-full bg-emerald-500/5 blur-3xl" />
+            </div>
+          </div>
+
+          <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 800 800">
+            <path d="M 200 200 L 400 350 L 600 250" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeDasharray="4 4" />
+            <path d="M 400 350 L 450 550 L 250 600" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeDasharray="4 4" />
+            <path d="M 600 250 L 650 450 L 450 550" fill="none" stroke="rgba(16,185,129,0.3)" strokeWidth="1.5" />
+          </svg>
+
+          <div className="absolute top-[25%] left-[25%] -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/10 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm animate-float-slow">
+            <div className="w-8 h-8 rounded-full bg-zinc-800" />
+          </div>
+          
+          <div className="absolute top-[30%] right-[25%] -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 animate-float-slow" style={{ animationDelay: '-2s' }}>
+            <div className="px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-[10px] text-emerald-400 font-medium uppercase tracking-widest backdrop-blur-md">
+              Session Live
+            </div>
+            <div className="w-16 h-16 rounded-full border border-emerald-500/30 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm">
+              <div className="w-12 h-12 rounded-full bg-zinc-800" />
+            </div>
+          </div>
+
+          <div className="absolute bottom-[30%] left-[30%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-white/10 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm animate-float-slow" style={{ animationDelay: '-4s' }}>
+            <div className="w-6 h-6 rounded-full bg-zinc-800" />
+          </div>
+
+          <div className="absolute bottom-[25%] right-[30%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-white/10 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm animate-float-slow" style={{ animationDelay: '-1s' }}>
+            <div className="w-10 h-10 rounded-full bg-zinc-800" />
+          </div>
+
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2 border-emerald-500/20 bg-[#05090f] flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.1)] z-10">
+            <div className="w-2 h-2 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+          </div>
+
         </div>
       </div>
     </section>
