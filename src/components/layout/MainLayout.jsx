@@ -21,13 +21,16 @@ function NavLink({ to, label, active }) {
   return (
     <Link
       to={to}
-      className={`text-sm transition px-1 py-0.5 ${
+      className={`relative text-sm transition-all duration-200 px-1 py-0.5 ${
         active
-          ? 'text-slate-900 font-semibold'
-          : 'text-slate-500 hover:text-slate-800'
+          ? 'text-zinc-50 font-medium'
+          : 'text-zinc-400 hover:text-zinc-100'
       }`}
     >
       {label}
+      {active && (
+        <span className="absolute -bottom-[1px] left-0 right-0 h-px bg-gradient-to-r from-violet-500/0 via-violet-500 to-violet-500/0" />
+      )}
     </Link>
   );
 }
@@ -36,7 +39,7 @@ function UserAvatar({ profile }) {
   const initial = (profile?.full_name?.[0] || profile?.email?.[0] || '?').toUpperCase();
 
   return (
-    <div className="w-8 h-8 rounded-full border border-slate-200 bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
+    <div className="w-7 h-7 rounded-full border border-white/10 bg-zinc-900 overflow-hidden shrink-0 flex items-center justify-center ring-1 ring-inset ring-white/5">
       {profile?.avatar_url ? (
         <img
           src={profile.avatar_url}
@@ -44,7 +47,7 @@ function UserAvatar({ profile }) {
           className="w-full h-full object-cover"
         />
       ) : (
-        <span className="text-xs font-semibold text-slate-500 select-none">
+        <span className="text-[11px] font-semibold text-zinc-400 select-none">
           {initial}
         </span>
       )}
@@ -87,10 +90,7 @@ export default function MainLayout() {
           queryClient.invalidateQueries({ queryKey: ['mentor-sessions', user.id] });
           queryClient.invalidateQueries({ queryKey: ['mentee-sessions', user.id] });
 
-          if (
-            payload.eventType === 'INSERT' &&
-            authProfile?.role === 'mentor'
-          ) {
+          if (payload.eventType === 'INSERT' && authProfile?.role === 'mentor') {
             addToast('A new session request has been posted.', 'info');
           }
 
@@ -103,10 +103,7 @@ export default function MainLayout() {
             addToast('Your session request was accepted!', 'success');
           }
 
-          if (
-            payload.eventType === 'UPDATE' &&
-            payload.new?.status === 'completed'
-          ) {
+          if (payload.eventType === 'UPDATE' && payload.new?.status === 'closed') {
             addToast('A session has been marked as completed.', 'info');
           }
         }
@@ -121,14 +118,17 @@ export default function MainLayout() {
   const links = authProfile?.role === 'mentor' ? MENTOR_LINKS : MENTEE_LINKS;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-6">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-semibold text-slate-900 mr-4 tracking-tight">
-              PeerTutor
-            </span>
-            <nav className="flex items-center gap-5">
+    <div className="min-h-screen bg-zinc-950">
+      <header className="sticky top-0 z-40 bg-zinc-950/70 backdrop-blur-md border-b border-white/[0.06]">
+        <div className="max-w-5xl mx-auto px-5 h-13 flex items-center justify-between gap-6" style={{ height: '52px' }}>
+          <div className="flex items-center gap-7">
+            <Link to="/" className="shrink-0">
+              <span className="text-sm font-semibold tracking-tight bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+                PeerTutor
+              </span>
+            </Link>
+
+            <nav className="flex items-center gap-6">
               {links.map(({ label, to }) => (
                 <NavLink
                   key={to}
@@ -144,7 +144,7 @@ export default function MainLayout() {
             <UserAvatar profile={fullProfile ?? { email: user?.email, ...authProfile }} />
             <button
               onClick={signOut}
-              className="text-xs text-slate-500 hover:text-slate-800 transition underline underline-offset-2"
+              className="text-xs text-zinc-500 hover:text-zinc-200 transition-colors duration-200"
             >
               Sign out
             </button>
@@ -152,7 +152,7 @@ export default function MainLayout() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-5 py-8">
         <Outlet />
       </main>
     </div>
