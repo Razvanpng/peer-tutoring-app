@@ -1,7 +1,10 @@
+import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { profilesApi } from '../../services/api';
+import { supabase } from '../../services/supabase';
 
 const MENTEE_LINKS = [
   { label: 'Dashboard', to: '/mentee/dashboard' },
@@ -52,12 +55,68 @@ function UserAvatar({ profile }) {
 export default function MainLayout() {
   const { profile: authProfile, user, signOut } = useAuth();
   const location = useLocation();
+  const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   const { data: fullProfile } = useQuery({
     queryKey: ['profile', authProfile?.id],
     queryFn: () => profilesApi.getProfile(authProfile.id),
     enabled: !!authProfile?.id,
   });
+
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'messages' },
+        (payload) => {
+          if (payload.new?.sender_id !== user.id) {
+            addToast('New message received!', 'info');
+          }
+          queryClient.invalidateQueries({ queryKey: ['messages'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'sessions' },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ['pending-sessions'] });
+          queryClient.invalidateQueries({ queryKey: ['mentor-sessions', user.id] });
+          queryClient.invalidateQueries({ queryKey: ['mentee-sessions', user.id] });
+
+          if (
+            payload.eventType === 'INSERT' &&
+            authProfile?.role === 'mentor'
+          ) {
+            addToast('A new session request has been posted.', 'info');
+          }
+
+          if (
+            payload.eventType === 'UPDATE' &&
+            payload.new?.status === 'accepted' &&
+            authProfile?.role === 'mentee' &&
+            payload.new?.mentee_id === user.id
+          ) {
+            addToast('Your session request was accepted!', 'success');
+          }
+
+          if (
+            payload.eventType === 'UPDATE' &&
+            payload.new?.status === 'completed'
+          ) {
+            addToast('A session has been marked as completed.', 'info');
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, authProfile?.role, addToast, queryClient]);
 
   const links = authProfile?.role === 'mentor' ? MENTOR_LINKS : MENTEE_LINKS;
 
