@@ -39,6 +39,7 @@ Scan the network for verified peers. Filter by subject, check reputation, and in
 1. **Clone the repo:**
    ```bash
    git clone https://github.com/Razvanpng/peer-tutoring-app
+   cd peer-tutoring-app
 
 2. **Install dependencies:**
     ```bash
@@ -46,7 +47,7 @@ Scan the network for verified peers. Filter by subject, check reputation, and in
 
 3. **Configure Environment Variables:**
     Create a `.env.local` file in the root directory:
-
+    ```env
     VITE_SUPABASE_URL=your_project_url
     VITE_SUPABASE_ANON_KEY=your_anon_key
 
