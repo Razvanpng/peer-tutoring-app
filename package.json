@@ -18,7 +18,7 @@
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.2",
     "y-monaco": "^0.1.6",
-    "y-supabase": "^0.0.4-7-alpha",
+    "y-protocols": "^1.0.7",
     "yjs": "^13.6.30"
   },
   "devDependencies": {
