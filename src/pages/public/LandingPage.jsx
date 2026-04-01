@@ -53,7 +53,7 @@ export default function LandingPage() {
             
             <div className="flex items-center gap-4 text-[10px] font-semibold text-zinc-500 tracking-[0.2em] uppercase mb-6 opacity-0 animate-reveal-up">
               <span className="w-8 h-px bg-emerald-500/50" />
-              Platform Beta Active
+              Open Beta
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[6.5rem] font-bold text-white tracking-tighter leading-[0.9] text-shadow-sm mb-6 opacity-0 animate-reveal-up" style={{ animationDelay: '0.1s' }}>
@@ -70,7 +70,7 @@ export default function LandingPage() {
                 to="/register"
                 className="group relative flex items-center justify-between w-48 bg-emerald-500 text-[#05090f] text-sm font-bold px-6 py-4 transition-all duration-300 hover:pr-4"
               >
-                <span className="uppercase tracking-widest">Start</span>
+                <span className="uppercase tracking-widest">Get Started</span>
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" strokeLinejoin="miter">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
@@ -79,7 +79,7 @@ export default function LandingPage() {
                 to="/login"
                 className="text-xs font-semibold text-zinc-500 hover:text-white uppercase tracking-widest transition-all duration-300"
               >
-                Log in instead
+                Sign In
               </Link>
             </div>
             
@@ -116,7 +116,7 @@ export default function LandingPage() {
           
           <div className="absolute top-[25%] right-[25%] -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 animate-float-delayed">
             <div className="px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-[10px] font-bold text-emerald-400 uppercase tracking-widest backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-              Session Live
+              Live Session
             </div>
             <div className="w-20 h-20 rounded-full border border-emerald-500/30 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm shadow-2xl">
               <div className="w-16 h-16 rounded-full bg-zinc-800" />
@@ -145,7 +145,7 @@ export default function LandingPage() {
         </div>
         <div className="flex items-center gap-2.5">
            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse" />
-           <span className="text-[10px] font-semibold text-emerald-500/50 uppercase tracking-widest">Systems Nominal</span>
+           <span className="text-[10px] font-semibold text-emerald-500/50 uppercase tracking-widest">All systems operational</span>
         </div>
       </footer>
 
