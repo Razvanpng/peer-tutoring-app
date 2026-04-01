@@ -35,10 +35,10 @@ export const sessionsApi = {
     const { data, error } = await supabase
       .from('sessions')
       .insert([sessionData])
-      .select()
-      .single();
+      .select();
+    
     if (error) throw new Error(error.message);
-    return data;
+    return data?.[0]; 
   },
 
   acceptSession: async (sessionId, mentorId) => {
@@ -46,10 +46,11 @@ export const sessionsApi = {
       .from('sessions')
       .update({ status: 'accepted', mentor_id: mentorId })
       .eq('id', sessionId)
-      .select()
-      .single();
+      .select();
+    
     if (error) throw new Error(error.message);
-    return data;
+    if (!data || data.length === 0) throw new Error('Session not found or update failed.');
+    return data[0];
   },
 
   getSession: async (id) => {
@@ -57,7 +58,8 @@ export const sessionsApi = {
       .from('sessions')
       .select('*, mentee:profiles!mentee_id(id, role), mentor:profiles!mentor_id(id, role)')
       .eq('id', id)
-      .single();
+      .maybeSingle(); 
+    
     if (error) throw new Error(error.message);
     return data;
   },
@@ -93,10 +95,10 @@ export const sessionsApi = {
     const { data, error } = await supabase
       .from('messages')
       .insert([{ session_id: sessionId, sender_id: senderId, content, image_url: imageUrl }])
-      .select()
-      .single();
+      .select();
+    
     if (error) throw new Error(error.message);
-    return data;
+    return data?.[0];
   },
 
   updateSessionStatus: async (sessionId, newStatus) => {
@@ -104,10 +106,10 @@ export const sessionsApi = {
       .from('sessions')
       .update({ status: newStatus })
       .eq('id', sessionId)
-      .select()
-      .single();
+      .select();
+    
     if (error) throw new Error(error.message);
-    return data;
+    return data?.[0];
   },
 
   submitReview: async (sessionId, rating, review) => {
@@ -115,10 +117,10 @@ export const sessionsApi = {
       .from('sessions')
       .update({ rating, review })
       .eq('id', sessionId)
-      .select()
-      .single();
+      .select();
+    
     if (error) throw new Error(error.message);
-    return data;
+    return data?.[0];
   }
 };
 
@@ -128,7 +130,7 @@ export const profilesApi = {
       .from('profiles')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
     if (error) throw new Error(error.message);
     return data;
   },
@@ -138,10 +140,10 @@ export const profilesApi = {
       .from('profiles')
       .update(updates)
       .eq('id', id)
-      .select()
-      .single();
+      .select();
+    
     if (error) throw new Error(error.message);
-    return data;
+    return data?.[0];
   },
 
   getAllMentors: async () => {
