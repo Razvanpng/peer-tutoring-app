@@ -12,12 +12,12 @@ I built PeerTutor because academic collaboration shouldn't feel like a social me
 ### Workspace
 Real-time synchronized environment featuring live chat, file attachments, and a collaborative editor that stays in sync without page refreshes.
 
-[Screenshot 1]
+[SS1]
 
 ### Directory
 Scan the network for verified peers. Filter by subject, check reputation, and initialize a connection instantly.
 
-[Screenshot 2]
+[SS2]
 
 - **Video Walkthrough:** [YouTube]
 
